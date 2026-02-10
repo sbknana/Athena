@@ -1,0 +1,19 @@
+Usage: athena generate-docs [options]
+
+Generate documentation (README, ARCHITECTURE, API, DEPLOYMENT, CONTRIBUTING)
+using Claude API
+
+Options:
+  --project <path>  Path to the project directory
+  --output <path>   Output directory for generated docs (default:
+                    <project>/docs)
+  --docs <types>    Comma-separated doc types to generate
+                    (readme,architecture,api,deployment,contributing) (default:
+                    "readme,architecture,api,deployment,contributing")
+  --model <tier>    Model tier: 'speed' (Sonnet) or 'quality' (Opus) (default:
+                    "speed")
+  --api-key <key>   Anthropic API key (or set ANTHROPIC_API_KEY env)
+  --diff            Only update changed sections, preserving manual edits
+                    (default: false)
+  --scan            Run project scan before generating docs (default: false)
+  -h, --help        display help for command

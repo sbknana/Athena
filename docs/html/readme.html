@@ -76,9 +76,7 @@
 <body>
   <nav class="sidebar">
     <div class="sidebar-header">athena</div>
-    <a href="api.html" class="nav-item">API</a>
-          <a href="architecture.html" class="nav-item">ARCHITECTURE</a>
-          <a href="contributing.html" class="nav-item">CONTRIBUTING</a>
+    <a href="architecture.html" class="nav-item">ARCHITECTURE</a>
           <a href="deployment.html" class="nav-item">DEPLOYMENT</a>
           <a href="readme.html" class="nav-item active">README</a>
           <a href="diagrams.html" class="nav-item">DIAGRAMS</a>
@@ -89,181 +87,147 @@
 <h2>Table of Contents</h2>
 
 <ul><li><a href="#athena">Athena</a></li>
-</ul>  - <a href="#description">Description</a>
-  - <a href="#features">Features</a>
+</ul>  - <a href="#what-is-this">What is this?</a>
+  - <a href="#screenshots">Screenshots</a>
   - <a href="#quick-start">Quick Start</a>
-    - <a href="#installation">Installation</a>
-    - <a href="#configure">Configure</a>
-    - <a href="#run">Run</a>
-<ul><li><a href="#scan-and-generate-documentation">Scan and generate documentation</a></li>
-<li><a href="#check-documentation-freshness">Check documentation freshness</a></li>
-<li><a href="#generate-with-screenshots">Generate with screenshots</a></li>
-</ul>  - <a href="#usage">Usage</a>
-    - <a href="#basic-documentation-generation">Basic Documentation Generation</a>
-<ul><li><a href="#generate-all-documentation">Generate all documentation</a></li>
-<li><a href="#generate-specific-docs">Generate specific docs</a></li>
-</ul>    - <a href="#screenshot-capture">Screenshot Capture</a>
-<ul><li><a href="#capture-screenshots-with-dev-server">Capture screenshots with dev server</a></li>
-<li><a href="#use-existing-server">Use existing server</a></li>
-</ul>    - <a href="#configuration">Configuration</a>
-<ul><li><a href="#check-if-project-has-config">Check if project has config</a></li>
-<li><a href="#show-current-configuration">Show current configuration</a></li>
-</ul>    - <a href="#freshness-checking">Freshness Checking</a>
-<ul><li><a href="#check-documentation-freshness">Check documentation freshness</a></li>
-<li><a href="#verbose-output-with-details">Verbose output with details</a></li>
-</ul>  - <a href="#tech-stack">Tech Stack</a>
+  - <a href="#how-to-use">How to Use</a>
+  - <a href="#features">Features</a>
+  - <a href="#installation">Installation</a>
   - <a href="#configuration">Configuration</a>
-    - <a href="#environment-variables">Environment Variables</a>
-<ul><li><a href="#required-for-ai-generation">Required for AI generation</a></li>
-</ul>    - <a href="#configuration-file-athenayml">Configuration File (athena.yml)</a>
-  - <a href="#contributing">Contributing</a>
+  - <a href="#tech-stack">Tech Stack</a>
   - <a href="#license">License</a>
   - <a href="#related-documentation">Related Documentation</a>
 
-<p>> Automated documentation generator powered by AI that keeps your project docs fresh and comprehensive</p>
+<strong>AI-powered documentation that stays fresh with your code</strong>
 
-<h2>Description</h2>
+<img src="screenshots/cli-cli-help.svg" alt="Athena CLI Help" style="max-width:100%;border-radius:8px;margin:1em 0;">
 
-<p>Athena is an intelligent documentation tool that automatically scans your codebase, analyzes its structure, and generates comprehensive documentation using Claude AI. It understands your project's architecture, features, and functionality to create high-quality README files, changelogs, and architectural diagrams without manual effort.</p>
+<h2>What is this?</h2>
 
-<p>Built for modern TypeScript projects, Athena integrates seamlessly into your development workflow. It analyzes source code, captures screenshots, tracks git history, and produces documentation that stays in sync with your codebase. Whether you're starting a new project or maintaining an established one, Athena ensures your documentation is always accurate and up-to-date.</p>
+<p>Athena automatically generates and updates your project documentation by analyzing your codebase. Instead of letting your docs get stale while your code evolves, Athena uses AI to write clear, accurate documentation that reflects what your project actually does right now. It's perfect for maintainers who want great docs without the manual effort.</p>
 
-<p>The tool goes beyond simple code documentation by generating visual aids like Mermaid diagrams, embedding screenshots, and creating interactive documentation that helps developers quickly understand and contribute to your project.</p>
+<h2>Screenshots</h2>
+
+<img src="screenshots/cli-cli-help.svg" alt="Athena CLI Commands" style="max-width:100%;border-radius:8px;margin:1em 0;">
+<em>All available Athena commands - generate docs, check freshness, create diagrams, and build changelogs</em>
+
+<img src="screenshots/cli-cli-version.svg" alt="Athena Version" style="max-width:100%;border-radius:8px;margin:1em 0;">
+<em>Check your installed Athena version</em>
+
+<h2>Quick Start</h2>
+
+<p>1. <strong>Install Athena</strong></p>
+   <pre><code class="language-bash">   npm install -g athena
+   </code></pre>
+
+<p>2. <strong>Set up your API key</strong> (Athena uses Claude AI)</p>
+   <pre><code class="language-bash">   export ANTHROPIC_API_KEY=your_api_key_here
+   </code></pre>
+
+<p>3. <strong>Generate documentation for your project</strong></p>
+   <pre><code class="language-bash">   cd your-project
+   athena generate
+   </code></pre>
+
+<p>4. <strong>Check your new docs</strong> - Look for generated markdown files in your project directory</p>
+
+<p>5. <strong>Keep docs fresh</strong> - Run <code>athena freshness</code> anytime to check if your docs are out of sync with your code</p>
+
+<h2>How to Use</h2>
+
+<strong>Generate Documentation</strong>
+
+<p>Run <code>athena generate</code> in your project root. Athena will scan your codebase, analyze the structure, and create comprehensive documentation. It automatically detects your project's language and framework.</p>
+
+<strong>Check Documentation Freshness</strong>
+
+<p>As you change your code, run <code>athena freshness</code> to see if your documentation is still accurate. Athena compares your current codebase against what's documented and highlights what's changed.</p>
+
+<strong>Create Architecture Diagrams</strong>
+
+<p>Use <code>athena diagram</code> to automatically generate visual representations of your project's structure. Great for onboarding new team members or planning refactors.</p>
+
+<strong>Build Changelogs</strong>
+
+<p>Run <code>athena changelog</code> to generate a changelog from your git history. Athena analyzes commits and tags to create a readable summary of what's changed between versions.</p>
+
+<strong>Capture Screenshots</strong>
+
+<p>If your project has a UI, use <code>athena screenshots</code> to automatically capture screenshots of key screens. These get embedded in your documentation.</p>
 
 <h2>Features</h2>
 
-<ul><li><strong>Automated Code Analysis</strong> — Scans TypeScript projects to extract functions, classes, and dependencies</li>
-<li><strong>AI-Powered Content Generation</strong> — Uses Claude AI to generate natural, comprehensive documentation</li>
-<li><strong>Screenshot Integration</strong> — Captures and embeds application screenshots using Playwright</li>
-<li><strong>Diagram Generation</strong> — Creates architectural diagrams with Mermaid</li>
-<li><strong>Changelog Automation</strong> — Parses git history and tags to generate changelogs</li>
-<li><strong>Freshness Tracking</strong> — Monitors documentation staleness and recommends updates</li>
-<li><strong>Configuration Management</strong> — Flexible YAML-based project configuration</li>
-<li><strong>Cross-Reference Building</strong> — Links related documentation sections automatically</li>
-<li><strong>Diff Analysis</strong> — Shows documentation changes before committing updates</li>
+<ul><li><strong>Automatic documentation generation</strong> - Write docs by running one command</li>
+<li><strong>Freshness checking</strong> - Know when your docs are out of sync with code changes</li>
+<li><strong>Multi-language support</strong> - Works with TypeScript, JavaScript, and detects frameworks automatically</li>
+<li><strong>Architecture diagrams</strong> - Visualize your project structure with auto-generated diagrams</li>
+<li><strong>Screenshot capture</strong> - Automatically grab UI screenshots for documentation</li>
+<li><strong>Changelog generation</strong> - Build changelogs from git history</li>
+<li><strong>AI-powered writing</strong> - Uses Claude AI to write clear, human-friendly documentation</li>
+<li><strong>Configurable</strong> - Customize what gets documented and how with an <code>.athena.json</code> config file</li>
+<li><strong>Git-aware</strong> - Integrates with your repository for changelogs and change detection</li>
 </ul>
-<h2>Quick Start</h2>
+<h2>Installation</h2>
 
-<h3>Installation</h3>
+<strong>Prerequisites</strong>
+
+<ul><li>Node.js 18 or higher</li>
+<li>An Anthropic API key (<a href="https://www.anthropic.com">get one here</a>)</li>
+<li>Optional: Mermaid CLI for diagram rendering (<code>npm install -g @mermaid-js/mermaid-cli</code>)</li>
+<li>Optional: Playwright for screenshot capture (installs automatically with Athena)</li>
+</ul>
+<strong>Install globally</strong>
 
 <pre><code class="language-bash">npm install -g athena
 </code></pre>
 
-<h3>Configure</h3>
+<strong>Or use with npx</strong> (no installation needed)
 
-<p>Create an <code>athena.yml</code> file in your project root:</p>
-
-<pre><code class="language-yaml">project:
-  name: my-project
-  framework: react
-  language: typescript
-
-<p>ai:</p>
-  provider: claude
-  model: claude-3-5-sonnet-20241022
-
-<p>docs:</p>
-  output: ./docs
-  readme: true
-  changelog: true
+<pre><code class="language-bash">npx athena generate
 </code></pre>
 
-<h3>Run</h3>
+<strong>Set up your API key</strong>
 
-<pre><code class="language-bash"># Scan and generate documentation
-<p>athena generate</p>
+<p>Athena needs access to Claude AI. Set your API key as an environment variable:</p>
 
-<h1>Check documentation freshness</h1>
-<p>athena check</p>
-
-<h1>Generate with screenshots</h1>
-<p>athena generate --screenshots</p>
+<pre><code class="language-bash">export ANTHROPIC_API_KEY=your_api_key_here
 </code></pre>
 
-<h2>Usage</h2>
+<p>Or add it to your shell profile (<code>.bashrc</code>, <code>.zshrc</code>, etc.) to make it permanent:</p>
 
-<h3>Basic Documentation Generation</h3>
-
-<pre><code class="language-bash"># Generate all documentation
-<p>athena generate</p>
-
-<h1>Generate specific docs</h1>
-<p>athena generate --readme-only</p>
-<p>athena generate --changelog-only</p>
+<pre><code class="language-bash">echo 'export ANTHROPIC_API_KEY=your_api_key_here' &gt;&gt; ~/.zshrc
 </code></pre>
 
-<h3>Screenshot Capture</h3>
-
-<pre><code class="language-bash"># Capture screenshots with dev server
-<p>athena screenshots --dev-command "npm start" --port 3000</p>
-
-<h1>Use existing server</h1>
-<p>athena screenshots --url http://localhost:3000</p>
-</code></pre>
-
-<h3>Configuration</h3>
-
-<pre><code class="language-bash"># Check if project has config
-<p>athena config check</p>
-
-<h1>Show current configuration</h1>
-<p>athena config show</p>
-</code></pre>
-
-<h3>Freshness Checking</h3>
-
-<pre><code class="language-bash"># Check documentation freshness
-<p>athena check</p>
-
-<h1>Verbose output with details</h1>
-<p>athena check --verbose</p>
-</code></pre>
-
-<h2>Tech Stack</h2>
-
-<ul><li><strong>Language</strong>: TypeScript</li>
-<li><strong>AI Provider</strong>: Anthropic Claude API (<code>@anthropic-ai/sdk</code>)</li>
-<li><strong>CLI Framework</strong>: Commander.js</li>
-<li><strong>Screenshot Tool</strong>: Playwright</li>
-<li><strong>Diagram Rendering</strong>: Mermaid CLI</li>
-<li><strong>File Globbing</strong>: glob</li>
-<li><strong>Diff Generation</strong>: diff</li>
-</ul>
 <h2>Configuration</h2>
 
-<h3>Environment Variables</h3>
+<p>Create an <code>.athena.json</code> file in your project root to customize behavior:</p>
 
-<pre><code class="language-bash"># Required for AI generation
-<p>ANTHROPIC_API_KEY=your_api_key_here</p>
+<pre><code class="language-json">{
+  "include": ["src/<strong>/<em>.ts", "lib/</strong>/</em>.js"],
+  "exclude": ["<strong>/*.test.ts", "dist/</strong>"],
+  "outputDir": "docs",
+  "diagramFormat": "mermaid"
+}
 </code></pre>
 
-<h3>Configuration File (athena.yml)</h3>
+<strong>Configuration options:</strong>
 
-<pre><code class="language-yaml">project:
-  name: string          # Project name
-  framework: string     # Framework (react, vue, next, etc.)
-  language: string      # Primary language
+<ul><li><code>include</code> - Glob patterns for files to scan (default: all code files)</li>
+<li><code>exclude</code> - Glob patterns to ignore (default: node_modules, test files)</li>
+<li><code>outputDir</code> - Where to write generated docs (default: project root)</li>
+<li><code>diagramFormat</code> - Diagram format preference (default: mermaid)</li>
+</ul>
+<h2>Tech Stack</h2>
 
-<p>ai:</p>
-  provider: string      # AI provider (claude)
-  model: string         # Model name
-  max_tokens: number    # Optional: token limit
+<p>Built with modern TypeScript tools:</p>
 
-<p>docs:</p>
-  output: string        # Documentation output directory
-  readme: boolean       # Generate README.md
-  changelog: boolean    # Generate CHANGELOG.md
-  diagrams: boolean     # Generate architecture diagrams
-
-<p>screenshots:</p>
-  enabled: boolean      # Enable screenshot capture
-  paths: string[]       # Routes to capture
-</code></pre>
-
-<h2>Contributing</h2>
-
-<p>Contributions are welcome! Please see <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> for guidelines on how to contribute to Athena.</p>
-
+<ul><li><strong>TypeScript</strong> - Type-safe codebase</li>
+<li><strong>Commander</strong> - CLI interface</li>
+<li><strong>Anthropic SDK</strong> - Claude AI integration for documentation generation</li>
+<li><strong>Playwright</strong> - Automated screenshot capture</li>
+<li><strong>Glob</strong> - File pattern matching for codebase scanning</li>
+<li><strong>Diff</strong> - Change detection for freshness checking</li>
+</ul>
 <h2>License</h2>
 
 <p>MIT</p>
@@ -272,9 +236,7 @@
 <h2>Related Documentation</h2>
 
 <ul><li><a href="ARCHITECTURE.md">Architecture</a></li>
-<li><a href="API.md">Api</a></li>
 <li><a href="DEPLOYMENT.md">Deployment</a></li>
-<li><a href="CONTRIBUTING.md">Contributing</a></li>
 </ul>
     <div class="footer">
       Generated by Athena &mdash; &copy; 2026 TheForge, LLC

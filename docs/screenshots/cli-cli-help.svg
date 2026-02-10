@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="847" viewBox="0 0 820 847">
+<style>
+    .terminal-text {
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Menlo, Monaco, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      white-space: pre;
+    }
+    .bold { font-weight: bold; }
+    .italic { font-style: italic; }
+    .underline { text-decoration: underline; }
+    .dim { opacity: 0.5; }
+  </style>
+<rect width="820" height="847" rx="8" ry="8" fill="#282c34" />
+<rect width="820" height="72" rx="8" ry="8" fill="#21252b" />
+<rect y="71" width="820" height="1" fill="#282c34" />
+<circle cx="20" cy="18" r="6" fill="#ff5f56" />
+<circle cx="40" cy="18" r="6" fill="#ffbd2e" />
+<circle cx="60" cy="18" r="6" fill="#27c93f" />
+<text x="410" y="50" text-anchor="middle" fill="#abb2bf" font-family="'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Menlo, Monaco, Consolas, monospace" font-size="14px" opacity="0.7">$ node /srv/forge-share/AI_Stuff/Athena/dist/cli.js --help</text>
+<text x="20" y="106" class="terminal-text" fill="#abb2bf">Usage: athena [options] [command]</text>
+<text x="20" y="148" class="terminal-text" fill="#abb2bf">Project scanner and manifest generator for AI-assisted development</text>
+<text x="20" y="190" class="terminal-text" fill="#abb2bf">Options:</text>
+<text x="20" y="211" class="terminal-text" fill="#abb2bf">  -V, --version            output the version number</text>
+<text x="20" y="232" class="terminal-text" fill="#abb2bf">  -h, --help               display help for command</text>
+<text x="20" y="274" class="terminal-text" fill="#abb2bf">Commands:</text>
+<text x="20" y="295" class="terminal-text" fill="#abb2bf">  generate [options]       Scan a project directory and generate a</text>
+<text x="20" y="316" class="terminal-text" fill="#abb2bf">                           project-manifest.json</text>
+<text x="20" y="337" class="terminal-text" fill="#abb2bf">  generate-docs [options]  Generate documentation (README, ARCHITECTURE, API,</text>
+<text x="20" y="358" class="terminal-text" fill="#abb2bf">                           DEPLOYMENT, CONTRIBUTING) using Claude API</text>
+<text x="20" y="379" class="terminal-text" fill="#abb2bf">  changelog [options]      Generate CHANGELOG.md (and optionally HISTORY.md)</text>
+<text x="20" y="400" class="terminal-text" fill="#abb2bf">                           from git history</text>
+<text x="20" y="421" class="terminal-text" fill="#abb2bf">  init [options]           Initialize athena.config.json in a project directory</text>
+<text x="20" y="442" class="terminal-text" fill="#abb2bf">  check [options]          Check if docs are stale (exit 1 if stale, for CI</text>
+<text x="20" y="463" class="terminal-text" fill="#abb2bf">                           integration)</text>
+<text x="20" y="484" class="terminal-text" fill="#abb2bf">  stamp [options]          Record current source file hashes (run after doc</text>
+<text x="20" y="505" class="terminal-text" fill="#abb2bf">                           generation to mark docs as fresh)</text>
+<text x="20" y="526" class="terminal-text" fill="#abb2bf">  watch [options]          Watch project source files and flag when docs become</text>
+<text x="20" y="547" class="terminal-text" fill="#abb2bf">                           stale</text>
+<text x="20" y="568" class="terminal-text" fill="#abb2bf">  schedule [options]       Show cron expression for scheduling periodic doc</text>
+<text x="20" y="589" class="terminal-text" fill="#abb2bf">                           regeneration</text>
+<text x="20" y="610" class="terminal-text" fill="#abb2bf">  capture-cli [options]    Auto-capture CLI tool output as SVG screenshots</text>
+<text x="20" y="631" class="terminal-text" fill="#abb2bf">                           (detects commands from package.json, bin,</text>
+<text x="20" y="652" class="terminal-text" fill="#abb2bf">                           athena.config.json)</text>
+<text x="20" y="673" class="terminal-text" fill="#abb2bf">  diagrams [options]       Generate Mermaid architecture diagrams from code</text>
+<text x="20" y="694" class="terminal-text" fill="#abb2bf">                           analysis (dependency graph, ER diagram, API flow,</text>
+<text x="20" y="715" class="terminal-text" fill="#abb2bf">                           component tree, file structure, data flow)</text>
+<text x="20" y="736" class="terminal-text" fill="#abb2bf">  screenshots [options]    Capture web app screenshots using Playwright</text>
+<text x="20" y="757" class="terminal-text" fill="#abb2bf">                           (auto-discovers routes, supports themes/viewports)</text>
+<text x="20" y="778" class="terminal-text" fill="#abb2bf">  render-html [options]    Convert markdown docs to a styled HTML site with</text>
+<text x="20" y="799" class="terminal-text" fill="#abb2bf">                           sidebar navigation, dark theme, and embedded diagrams</text>
+<text x="20" y="820" class="terminal-text" fill="#abb2bf">  help [command]           display help for command</text>
+</svg>

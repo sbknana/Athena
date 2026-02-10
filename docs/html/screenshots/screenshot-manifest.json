@@ -1,0 +1,21 @@
+{
+  "screenshots": [
+    {
+      "path": "cli-cli-help.svg",
+      "route": "athena --help",
+      "viewport": "cli",
+      "theme": "dark",
+      "description": "Athena CLI help showing all available commands"
+    },
+    {
+      "path": "cli-cli-version.svg",
+      "route": "athena --version",
+      "viewport": "cli",
+      "theme": "dark",
+      "description": "Athena version output"
+    }
+  ],
+  "capturedAt": "2026-02-10",
+  "viewports": ["cli"],
+  "themes": ["dark"]
+}

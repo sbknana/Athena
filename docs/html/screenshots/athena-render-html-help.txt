@@ -1,0 +1,14 @@
+Usage: athena render-html [options]
+
+Convert markdown docs to a styled HTML site with sidebar navigation, dark theme,
+and embedded diagrams
+
+Options:
+  --project <path>  Path to the project directory
+  --input <path>    Input docs directory (default: <project>/docs)
+  --output <path>   Output HTML directory (default: <project>/docs/html)
+  --title <title>   Site title (default: project name)
+  --theme <theme>   Theme: dark, light (default: "dark")
+  --pdf             Also generate PDF versions of each page using Playwright
+                    (default: false)
+  -h, --help        display help for command

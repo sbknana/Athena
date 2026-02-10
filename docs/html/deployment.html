@@ -76,9 +76,7 @@
 <body>
   <nav class="sidebar">
     <div class="sidebar-header">athena</div>
-    <a href="api.html" class="nav-item">API</a>
-          <a href="architecture.html" class="nav-item">ARCHITECTURE</a>
-          <a href="contributing.html" class="nav-item">CONTRIBUTING</a>
+    <a href="architecture.html" class="nav-item">ARCHITECTURE</a>
           <a href="deployment.html" class="nav-item active">DEPLOYMENT</a>
           <a href="readme.html" class="nav-item">README</a>
           <a href="diagrams.html" class="nav-item">DIAGRAMS</a>
@@ -89,264 +87,238 @@
 <h2>Table of Contents</h2>
 
 <ul><li><a href="#deploymentmd">DEPLOYMENT.md</a></li>
+</ul>  - <a href="#tldr">TL;DR</a>
+<ul><li><a href="#clone-and-install">Clone and install</a></li>
+<li><a href="#build-and-run">Build and run</a></li>
 </ul>  - <a href="#prerequisites">Prerequisites</a>
-    - <a href="#required-tools">Required Tools</a>
-    - <a href="#optional-tools">Optional Tools</a>
-    - <a href="#required-accounts">Required Accounts</a>
+  - <a href="#step-by-step-setup">Step-by-Step Setup</a>
+    - <a href="#1-clone-the-repository">1. Clone the Repository</a>
+    - <a href="#2-install-dependencies">2. Install Dependencies</a>
+    - <a href="#3-build-the-project">3. Build the Project</a>
+    - <a href="#4-set-up-environment-variables">4. Set Up Environment Variables</a>
+    - <a href="#5-verify-installation">5. Verify Installation</a>
+    - <a href="#6-run-your-first-scan">6. Run Your First Scan</a>
   - <a href="#environment-variables">Environment Variables</a>
-    - <a href="#setting-environment-variables">Setting Environment Variables</a>
-<ul><li><a href="#create-env-file-in-project-root">Create .env file in project root</a></li>
-</ul>  - <a href="#local-development">Local Development</a>
-    - <a href="#1-clone-and-install">1. Clone and Install</a>
-<ul><li><a href="#clone-the-repository">Clone the repository</a></li>
-<li><a href="#install-dependencies">Install dependencies</a></li>
-<li><a href="#install-playwright-browsers-required-for-screenshot-features">Install Playwright browsers (required for screenshot features)</a></li>
-</ul>    - <a href="#2-configure-environment">2. Configure Environment</a>
-<ul><li><a href="#copy-example-env-file-if-exists-or-create-new">Copy example env file (if exists) or create new</a></li>
-<li><a href="#add-your-anthropic-api-key">Add your Anthropic API key</a></li>
-</ul>    - <a href="#3-run-development-server">3. Run Development Server</a>
-<ul><li><a href="#run-with-tsx-hot-reload">Run with tsx (hot reload)</a></li>
-<li><a href="#or-build-and-run">Or build and run</a></li>
-</ul>    - <a href="#4-verify-installation">4. Verify Installation</a>
-<ul><li><a href="#test-the-cli">Test the CLI</a></li>
-<li><a href="#or-during-development">Or during development</a></li>
-</ul>  - <a href="#build">Build</a>
-    - <a href="#development-build">Development Build</a>
-    - <a href="#build-artifacts">Build Artifacts</a>
-    - <a href="#build-verification">Build Verification</a>
-<ul><li><a href="#verify-build-output">Verify build output</a></li>
-<li><a href="#test-built-cli">Test built CLI</a></li>
-</ul>    - <a href="#clean-build">Clean Build</a>
-<ul><li><a href="#remove-old-build">Remove old build</a></li>
-<li><a href="#fresh-build">Fresh build</a></li>
-</ul>  - <a href="#deployment-options">Deployment Options</a>
-    - <a href="#option-1-npm-package-recommended-for-cli-tools">Option 1: NPM Package (Recommended for CLI tools)</a>
-<ul><li><a href="#build-for-publication">Build for publication</a></li>
-<li><a href="#test-locally">Test locally</a></li>
-<li><a href="#publish-to-npm-requires-npm-account">Publish to npm (requires npm account)</a></li>
-</ul>    - <a href="#option-2-github-releases-binary-distribution">Option 2: GitHub Releases (Binary distribution)</a>
-<ul><li><a href="#install-pkg">Install pkg</a></li>
-<li><a href="#create-binaries">Create binaries</a></li>
-</ul>    - <a href="#option-3-docker-container">Option 3: Docker Container</a>
-<ul><li><a href="#build-image">Build image</a></li>
-<li><a href="#run-container">Run container</a></li>
-</ul>    - <a href="#option-4-direct-repository-clone">Option 4: Direct Repository Clone</a>
-  - <a href="#docker">Docker</a>
+  - <a href="#running-in-production">Running in Production</a>
+    - <a href="#option-1-direct-node-execution">Option 1: Direct Node Execution</a>
+<ul><li><a href="#build-once">Build once</a></li>
+<li><a href="#run-as-a-global-command">Run as a global command</a></li>
+<li><a href="#now-use-from-anywhere">Now use from anywhere</a></li>
+</ul>    - <a href="#option-2-pm2-for-long-running-services">Option 2: PM2 (for long-running services)</a>
+<ul><li><a href="#start-as-daemon-if-running-as-a-service">Start as daemon (if running as a service)</a></li>
+<li><a href="#monitor">Monitor</a></li>
+</ul>    - <a href="#option-3-systemd-service">Option 3: Systemd Service</a>
+    - <a href="#option-4-cron-job-scheduled-scans">Option 4: Cron Job (scheduled scans)</a>
+<ul><li><a href="#edit-crontab">Edit crontab</a></li>
+<li><a href="#add-line-runs-daily-at-2-am">Add line (runs daily at 2 AM)</a></li>
+</ul>  - <a href="#docker">Docker</a>
     - <a href="#dockerfile">Dockerfile</a>
-<ul><li><a href="#install-system-dependencies-for-playwright">Install system dependencies for Playwright</a></li>
-<li><a href="#set-playwright-to-use-installed-chromium">Set Playwright to use installed chromium</a></li>
+<ul><li><a href="#install-playwright-dependencies">Install Playwright dependencies</a></li>
 <li><a href="#copy-package-files">Copy package files</a></li>
 <li><a href="#install-dependencies">Install dependencies</a></li>
 <li><a href="#copy-source-and-build">Copy source and build</a></li>
-<li><a href="#create-volume-for-project-scanning">Create volume for project scanning</a></li>
-<li><a href="#set-environment-variables">Set environment variables</a></li>
-<li><a href="#default-command">Default command</a></li>
-</ul>    - <a href="#dockerignore">.dockerignore</a>
-    - <a href="#docker-compose-optional">Docker Compose (Optional)</a>
-    - <a href="#docker-usage">Docker Usage</a>
+<li><a href="#cleanup">Cleanup</a></li>
+<li><a href="#runtime-environment">Runtime environment</a></li>
+</ul>    - <a href="#build-and-run">Build and Run</a>
 <ul><li><a href="#build-image">Build image</a></li>
-<li><a href="#run-with-environment-variable">Run with environment variable</a></li>
-<li><a href="#using-docker-compose">Using docker-compose</a></li>
-</ul>  - <a href="#cicd">CI/CD</a>
-    - <a href="#github-actions-workflow">GitHub Actions Workflow</a>
-    - <a href="#required-secrets">Required Secrets</a>
-    - <a href="#branch-protection">Branch Protection</a>
-  - <a href="#monitoring">Monitoring</a>
-    - <a href="#application-monitoring">Application Monitoring</a>
-    - <a href="#logging-best-practices">Logging Best Practices</a>
-    - <a href="#suggested-monitoring-dashboard">Suggested Monitoring Dashboard</a>
-  - <a href="#quick-start-checklist">Quick Start Checklist</a>
+<li><a href="#run-with-api-key">Run with API key</a></li>
+<li><a href="#run-with-env-file">Run with .env file</a></li>
+</ul>    - <a href="#docker-compose">Docker Compose</a>
   - <a href="#troubleshooting">Troubleshooting</a>
-    - <a href="#playwright-issues">Playwright Issues</a>
-<ul><li><a href="#reinstall-browsers-with-system-dependencies">Reinstall browsers with system dependencies</a></li>
-</ul>    - <a href="#build-failures">Build Failures</a>
-<ul><li><a href="#clear-cache-and-rebuild">Clear cache and rebuild</a></li>
-</ul>    - <a href="#anthropic-api-errors">Anthropic API Errors</a>
-    - <a href="#permission-errors-npm-global-install">Permission Errors (npm global install)</a>
-<ul><li><a href="#use-npx-instead-of-global-install">Use npx instead of global install</a></li>
-<li><a href="#or-fix-npm-permissions">Or fix npm permissions</a></li>
+    - <a href="#issue-anthropic_api_key-not-found">Issue: <code>ANTHROPIC_API_KEY</code> not found</a>
+<ul><li><a href="#or-add-to-env-file">Or add to .env file</a></li>
+</ul>    - <a href="#issue-typescript-build-fails">Issue: TypeScript build fails</a>
+    - <a href="#issue-playwright-browsers-not-installed">Issue: Playwright browsers not installed</a>
+<ul><li><a href="#or-install-all-browsers">Or install all browsers</a></li>
+</ul>    - <a href="#issue-port-already-in-use-for-dev-server">Issue: Port already in use (for dev server)</a>
+<ul><li><a href="#find-and-kill-process-using-port">Find and kill process using port</a></li>
+<li><a href="#or-use-a-different-port-if-configurable">Or use a different port (if configurable)</a></li>
+</ul>    - <a href="#issue-permission-denied-on-npm-link">Issue: Permission denied on <code>npm link</code></a>
+<ul><li><a href="#option-1-use-sudo-not-recommended">Option 1: Use sudo (not recommended)</a></li>
+<li><a href="#option-2-fix-npm-permissions">Option 2: Fix npm permissions</a></li>
+</ul>    - <a href="#issue-mermaid-diagrams-not-generating">Issue: Mermaid diagrams not generating</a>
+<ul><li><a href="#install-globally">Install globally</a></li>
+<li><a href="#verify-installation">Verify installation</a></li>
+</ul>    - <a href="#issue-out-of-memory-during-build">Issue: Out of memory during build</a>
+<ul><li><a href="#increase-nodejs-memory-limit">Increase Node.js memory limit</a></li>
+</ul>    - <a href="#issue-git-operations-fail">Issue: Git operations fail</a>
+<ul><li><a href="#initialize-git-in-target-project">Initialize git in target project</a></li>
+<li><a href="#or-skip-git-dependent-features-check-cli-flags">Or skip git-dependent features (check CLI flags)</a></li>
+</ul>    - <a href="#debugging-tips">Debugging Tips</a>
+<ul><li><a href="#should-output-valid-json">Should output valid JSON</a></li>
 </ul>  - <a href="#related-documentation">Related Documentation</a>
+
+<h2>TL;DR</h2>
+
+<pre><code class="language-bash"># Clone and install
+<p>git clone &lt;your-repo-url&gt; athena &amp;&amp; cd athena</p>
+<p>npm install</p>
+
+<h1>Build and run</h1>
+<p>npm run build</p>
+<p>npm start -- --help</p>
+</code></pre>
 
 <h2>Prerequisites</h2>
 
-<h3>Required Tools</h3>
-<ul><li><strong>Node.js</strong>: v18.x or higher (LTS recommended)</li>
-<li><strong>npm</strong>: v9.x or higher (comes with Node.js)</li>
-<li><strong>TypeScript</strong>: Installed as dev dependency</li>
-<li><strong>Git</strong>: For changelog and version management features</li>
-</ul>
-<h3>Optional Tools</h3>
-<ul><li><strong>Mermaid CLI</strong>: Required for diagram rendering features</li>
-</ul>  <pre><code class="language-bash">  npm install -g @mermaid-js/mermaid-cli
-  </code></pre>
-<ul><li><strong>Playwright</strong>: Already included as dependency, but may require system dependencies:</li>
-</ul>  <pre><code class="language-bash">  npx playwright install-deps
-  </code></pre>
-
-<h3>Required Accounts</h3>
-<ul><li><strong>Anthropic API Account</strong>: For Claude AI integration</li>
-</ul>  - Sign up at: https://console.anthropic.com/
-  - Generate API key from dashboard
-
-<h2>Environment Variables</h2>
-
-<p>The following environment variables are required or recommended:</p>
-
-<table><tr><td>Variable</td><td>Required</td><td>Description</td><td>Example</td></tr>
-<tr><td>----------</td><td>----------</td><td>-------------</td><td>---------</td></tr>
-<tr><td><code>ANTHROPIC_API_KEY</code></td><td><strong>Yes</strong></td><td>API key for Claude AI integration</td><td><code>sk-ant-api03-...</code></td></tr>
-<tr><td><code>NODE_ENV</code></td><td>No</td><td>Runtime environment</td><td><code>production</code>, <code>development</code></td></tr>
-<tr><td><code>ATHENA_CONFIG_PATH</code></td><td>No</td><td>Custom path to athena config file</td><td><code>/path/to/athena.config.json</code></td></tr>
+<table><tr><td>Tool</td><td>Version</td><td>Install Link</td></tr>
+<tr><td>------</td><td>---------</td><td>-------------</td></tr>
+<tr><td>Node.js</td><td>≥18.0.0</td><td>https://nodejs.org</td></tr>
+<tr><td>npm</td><td>≥9.0.0</td><td>(comes with Node.js)</td></tr>
+<tr><td>Git</td><td>Any recent</td><td>https://git-scm.com</td></tr>
+<tr><td>Anthropic API Key</td><td>N/A</td><td>https://console.anthropic.com</td></tr>
 </table>
-<h3>Setting Environment Variables</h3>
+<strong>Optional (for diagram generation):</strong>
+<ul><li>Mermaid CLI: <code>npm install -g @mermaid-js/mermaid-cli</code></li>
+</ul>
+<strong>Optional (for screenshots):</strong>
+<ul><li>Playwright browsers: Installed automatically during <code>npm install</code></li>
+</ul>
+<h2>Step-by-Step Setup</h2>
 
-<strong>Development (.env file)</strong>:
-<pre><code class="language-bash"># Create .env file in project root
-<p>ANTHROPIC_API_KEY=sk-ant-api03-your-key-here</p>
-<p>NODE_ENV=development</p>
-</code></pre>
+<h3>1. Clone the Repository</h3>
 
-<strong>Production (shell)</strong>:
-<pre><code class="language-bash">export ANTHROPIC_API_KEY=sk-ant-api03-your-key-here
-<p>export NODE_ENV=production</p>
-</code></pre>
-
-<h2>Local Development</h2>
-
-<h3>1. Clone and Install</h3>
-<pre><code class="language-bash"># Clone the repository
-<p>git clone &lt;repository-url&gt;</p>
+<pre><code class="language-bash">git clone &lt;your-repo-url&gt; athena
 <p>cd athena</p>
-
-<h1>Install dependencies</h1>
-<p>npm install</p>
-
-<h1>Install Playwright browsers (required for screenshot features)</h1>
-<p>npx playwright install</p>
 </code></pre>
 
-<h3>2. Configure Environment</h3>
-<pre><code class="language-bash"># Copy example env file (if exists) or create new
-<p>touch .env</p>
+<h3>2. Install Dependencies</h3>
 
-<h1>Add your Anthropic API key</h1>
-<p>echo "ANTHROPIC_API_KEY=sk-ant-api03-your-key-here" &gt;&gt; .env</p>
+<pre><code class="language-bash">npm install
 </code></pre>
 
-<h3>3. Run Development Server</h3>
-<pre><code class="language-bash"># Run with tsx (hot reload)
-<p>npm run dev</p>
+<p>This will install:</p>
+<ul><li><code>@anthropic-ai/sdk</code> for Claude API integration</li>
+<li><code>commander</code> for CLI parsing</li>
+<li><code>diff</code> for change detection</li>
+<li><code>glob</code> for file scanning</li>
+<li><code>playwright</code> for screenshot generation</li>
+</ul>
+<h3>3. Build the Project</h3>
 
-<h1>Or build and run</h1>
-<p>npm run build</p>
-<p>npm start</p>
-</code></pre>
-
-<h3>4. Verify Installation</h3>
-<pre><code class="language-bash"># Test the CLI
-<p>node dist/cli.js --help</p>
-
-<h1>Or during development</h1>
-<p>tsx src/cli.ts --help</p>
-</code></pre>
-
-<h2>Build</h2>
-
-<h3>Development Build</h3>
 <pre><code class="language-bash">npm run build
 </code></pre>
 
-<strong>Output</strong>: Compiled JavaScript in <code>dist/</code> directory
+<p>This compiles TypeScript files from <code>src/</code> to <code>dist/</code>.</p>
 
-<h3>Build Artifacts</h3>
-<ul><li><code>dist/cli.js</code> - Main CLI entry point</li>
-<li><code>dist/<em>*/</em>.js</code> - All compiled TypeScript modules</li>
-<li><code>dist/<em>*/</em>.d.ts</code> - TypeScript declaration files (if configured)</li>
-</ul>
-<h3>Build Verification</h3>
-<pre><code class="language-bash"># Verify build output
-<p>ls -la dist/</p>
+<h3>4. Set Up Environment Variables</h3>
 
-<h1>Test built CLI</h1>
-<p>node dist/cli.js --version</p>
+<p>Create a <code>.env</code> file in the project root:</p>
+
+<pre><code class="language-bash">cat &gt; .env &lt;&lt; 'EOF'
+<p>ANTHROPIC_API_KEY=sk-ant-api03-...</p>
+<p>EOF</p>
 </code></pre>
 
-<h3>Clean Build</h3>
-<pre><code class="language-bash"># Remove old build
-<p>rm -rf dist/</p>
+<p>Or export directly:</p>
 
-<h1>Fresh build</h1>
-<p>npm run build</p>
+<pre><code class="language-bash">export ANTHROPIC_API_KEY="sk-ant-api03-..."
 </code></pre>
 
-<h2>Deployment Options</h2>
+<h3>5. Verify Installation</h3>
 
-<h3>Option 1: NPM Package (Recommended for CLI tools)</h3>
+<pre><code class="language-bash">npm start -- --version
+<p>npm start -- --help</p>
+</code></pre>
 
-<strong>Best for</strong>: Distributing as a global CLI tool
+<p>You should see the Athena version and available commands.</p>
 
-<pre><code class="language-bash"># Build for publication
+<h3>6. Run Your First Scan</h3>
+
+<pre><code class="language-bash">npm start -- scan /path/to/your/project
+</code></pre>
+
+<p>Or in development mode:</p>
+
+<pre><code class="language-bash">npm run dev -- scan /path/to/your/project
+</code></pre>
+
+<h2>Environment Variables</h2>
+
+<table><tr><td>Variable</td><td>Description</td><td>Example Value</td><td>Required?</td></tr>
+<tr><td>----------</td><td>-------------</td><td>---------------</td><td>-----------</td></tr>
+<tr><td><code>ANTHROPIC_API_KEY</code></td><td>Claude API key for documentation generation</td><td><code>sk-ant-api03-xxxxx</code></td><td>✅ Yes (for generation)</td></tr>
+<tr><td><code>NODE_ENV</code></td><td>Environment mode</td><td><code>production</code></td><td>❌ No (defaults to development)</td></tr>
+<tr><td><code>DEBUG</code></td><td>Enable debug logging</td><td><code>athena:*</code></td><td>❌ No</td></tr>
+</table>
+<strong>Getting your API key:</strong>
+<p>1. Go to https://console.anthropic.com</p>
+<p>2. Navigate to API Keys section</p>
+<p>3. Create a new key or copy existing one</p>
+<p>4. Has billing access for production use</p>
+
+<h2>Running in Production</h2>
+
+<h3>Option 1: Direct Node Execution</h3>
+
+<pre><code class="language-bash"># Build once
 <p>npm run build</p>
 
-<h1>Test locally</h1>
+<h1>Run as a global command</h1>
 <p>npm link</p>
 
-<h1>Publish to npm (requires npm account)</h1>
-<p>npm publish</p>
+<h1>Now use from anywhere</h1>
+<p>athena scan /path/to/project</p>
+<p>athena generate --docs</p>
 </code></pre>
 
-<strong>Installation by users</strong>:
-<pre><code class="language-bash">npm install -g athena
-<p>athena --help</p>
+<h3>Option 2: PM2 (for long-running services)</h3>
+
+<pre><code class="language-bash">npm install -g pm2
+
+<h1>Start as daemon (if running as a service)</h1>
+<p>pm2 start dist/cli.js --name athena -- scan /path/to/project --watch</p>
+
+<h1>Monitor</h1>
+<p>pm2 logs athena</p>
+<p>pm2 status</p>
 </code></pre>
 
-<h3>Option 2: GitHub Releases (Binary distribution)</h3>
+<h3>Option 3: Systemd Service</h3>
 
-<strong>Best for</strong>: Self-contained executables
+<p>Create <code>/etc/systemd/system/athena.service</code>:</p>
 
-<p>Use <code>pkg</code> or similar tool to create standalone binaries:</p>
+<pre><code class="language-ini">[Unit]
+<p>Description=Athena Documentation Generator</p>
+<p>After=network.target</p>
 
-<pre><code class="language-bash"># Install pkg
-<p>npm install -g pkg</p>
+<p>[Service]</p>
+<p>Type=simple</p>
+<p>User=your-user</p>
+<p>WorkingDirectory=/path/to/athena</p>
+<p>Environment="ANTHROPIC_API_KEY=sk-ant-api03-xxxxx"</p>
+<p>ExecStart=/usr/bin/node /path/to/athena/dist/cli.js scan /path/to/target --watch</p>
+<p>Restart=on-failure</p>
+<p>RestartSec=10</p>
 
-<h1>Create binaries</h1>
-<p>pkg . --targets node18-linux-x64,node18-macos-x64,node18-win-x64</p>
+<p>[Install]</p>
+<p>WantedBy=multi-user.target</p>
 </code></pre>
 
-<h3>Option 3: Docker Container</h3>
+<p>Enable and start:</p>
 
-<strong>Best for</strong>: Containerized environments, consistent runtime
-
-<p>See Docker section below for complete Dockerfile.</p>
-
-<pre><code class="language-bash"># Build image
-<p>docker build -t athena:latest .</p>
-
-<h1>Run container</h1>
-<p>docker run -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY athena:latest</p>
+<pre><code class="language-bash">sudo systemctl daemon-reload
+<p>sudo systemctl enable athena</p>
+<p>sudo systemctl start athena</p>
+<p>sudo systemctl status athena</p>
 </code></pre>
 
-<h3>Option 4: Direct Repository Clone</h3>
+<h3>Option 4: Cron Job (scheduled scans)</h3>
 
-<strong>Best for</strong>: Development teams, internal tools
+<pre><code class="language-bash"># Edit crontab
+<p>crontab -e</p>
 
-<p>Users clone and install directly:</p>
-<pre><code class="language-bash">git clone &lt;repository-url&gt;
-<p>cd athena</p>
-<p>npm install</p>
-<p>npm run build</p>
-<p>npm link  # Optional: make available globally</p>
+<h1>Add line (runs daily at 2 AM)</h1>
+<p>0 2 <em> </em> * cd /path/to/athena &amp;&amp; /usr/bin/node dist/cli.js scan /path/to/project &gt;&gt; /var/log/athena.log 2&gt;&amp;1</p>
 </code></pre>
 
 <h2>Docker</h2>
 
 <h3>Dockerfile</h3>
 
-<p>Create <code>Dockerfile</code> in project root:</p>
-
 <pre><code class="language-dockerfile">FROM node:18-alpine
 
-<h1>Install system dependencies for Playwright</h1>
+<h1>Install Playwright dependencies</h1>
 <p>RUN apk add --no-cache \</p>
     chromium \
     nss \
@@ -355,7 +327,6 @@
     ca-certificates \
     ttf-freefont
 
-<h1>Set Playwright to use installed chromium</h1>
 <p>ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1</p>
 <p>ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser</p>
 
@@ -368,38 +339,43 @@
 <p>RUN npm ci --only=production</p>
 
 <h1>Copy source and build</h1>
-<p>COPY . .</p>
-<p>RUN npm run build</p>
+<p>COPY tsconfig.json ./</p>
+<p>COPY src ./src</p>
+<p>RUN npm install -g typescript &amp;&amp; \</p>
+    npm run build &amp;&amp; \
+    npm uninstall -g typescript
 
-<h1>Create volume for project scanning</h1>
-<p>VOLUME ["/project"]</p>
+<h1>Cleanup</h1>
+<p>RUN rm -rf src tsconfig.json</p>
 
-<h1>Set environment variables</h1>
+<h1>Runtime environment</h1>
 <p>ENV NODE_ENV=production</p>
 
-<h1>Default command</h1>
 <p>ENTRYPOINT ["node", "dist/cli.js"]</p>
 <p>CMD ["--help"]</p>
 </code></pre>
 
-<h3>.dockerignore</h3>
+<h3>Build and Run</h3>
 
-<p>Create <code>.dockerignore</code>:</p>
+<pre><code class="language-bash"># Build image
+<p>docker build -t athena:latest .</p>
 
-<pre><code class="language-text">node_modules
-<p>dist</p>
-<p>.git</p>
-<p>.env</p>
-<p>.env.*</p>
-<p>*.log</p>
-<p>coverage</p>
-<p>.vscode</p>
-<p>.idea</p>
+<h1>Run with API key</h1>
+<p>docker run --rm \</p>
+  -e ANTHROPIC_API_KEY="sk-ant-api03-xxxxx" \
+  -v /path/to/target-project:/project \
+  athena:latest scan /project
+
+<h1>Run with .env file</h1>
+<p>docker run --rm \</p>
+  --env-file .env \
+  -v /path/to/target-project:/project \
+  athena:latest scan /project --output /project/docs
 </code></pre>
 
-<h3>Docker Compose (Optional)</h3>
+<h3>Docker Compose</h3>
 
-<p>Create <code>docker-compose.yml</code> for easier usage:</p>
+<p>Create <code>docker-compose.yml</code>:</p>
 
 <pre><code class="language-yaml">version: '3.8'
 
@@ -409,332 +385,164 @@
     image: athena:latest
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - NODE_ENV=production
     volumes:
       - ./target-project:/project
-    command: ["scan", "/project"]
+      - ./output:/output
+    command: scan /project --output /output
 </code></pre>
 
-<h3>Docker Usage</h3>
+<p>Run:</p>
 
-<pre><code class="language-bash"># Build image
-<p>docker build -t athena:latest .</p>
-
-<h1>Run with environment variable</h1>
-<p>docker run --rm \</p>
-  -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
-  -v $(pwd)/target-project:/project \
-  athena:latest scan /project
-
-<h1>Using docker-compose</h1>
-<p>docker-compose run athena scan /project</p>
+<pre><code class="language-bash">docker-compose up
 </code></pre>
 
-<h2>CI/CD</h2>
-
-<h3>GitHub Actions Workflow</h3>
-
-<p>Create <code>.github/workflows/ci-cd.yml</code>:</p>
-
-<pre><code class="language-yaml">name: CI/CD Pipeline
-
-<p>on:</p>
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-  release:
-    types: [created]
-
-<p>jobs:</p>
-  test-and-build:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-      
-      - name: Build project
-        run: npm run build
-      
-      - name: Verify build output
-        run: |
-          test -f dist/cli.js
-          node dist/cli.js --version
-      
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist-${{ matrix.node-version }}
-          path: dist/
-
-  publish-npm:
-    needs: test-and-build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-          registry-url: 'https://registry.npmjs.org'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Build
-        run: npm run build
-      
-      - name: Publish to NPM
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  docker-build:
-    needs: test-and-build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      
-      - name: Extract version
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" &gt;&gt; $GITHUB_OUTPUT
-      
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/athena:latest
-            ${{ secrets.DOCKER_USERNAME }}/athena:${{ steps.version.outputs.VERSION }}
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/athena:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/athena:buildcache,mode=max
-</code></pre>
-
-<h3>Required Secrets</h3>
-
-<p>Configure these secrets in GitHub repository settings:</p>
-
-<ul><li><code>NPM_TOKEN</code>: NPM authentication token (for npm publish)</li>
-<li><code>DOCKER_USERNAME</code>: Docker Hub username</li>
-<li><code>DOCKER_PASSWORD</code>: Docker Hub password or access token</li>
-<li><code>ANTHROPIC_API_KEY</code>: (Optional) For integration tests</li>
-</ul>
-<h3>Branch Protection</h3>
-
-<strong>Suggested settings</strong> for main branch:
-<ul><li>Require pull request reviews</li>
-<li>Require status checks to pass (CI/CD workflow)</li>
-<li>Require branches to be up to date</li>
-</ul>
-<h2>Monitoring</h2>
-
-<h3>Application Monitoring</h3>
-
-<p>Since this is a CLI tool, traditional APM may not apply. Consider:</p>
-
-<h4>1. Usage Analytics (Optional)</h4>
-
-<p>Track CLI usage with telemetry:</p>
-
-<pre><code class="language-typescript">// Example: Add to src/cli.ts
-<p>import { track } from './utils/analytics';</p>
-
-<p>// Track command usage (anonymized)</p>
-<p>track('command:scan', { framework: detectedFramework });</p>
-</code></pre>
-
-<strong>Suggested tools</strong>:
-<ul><li>Mixpanel</li>
-<li>Segment</li>
-<li>PostHog (self-hosted option)</li>
-</ul>
-<h4>2. Error Tracking</h4>
-
-<strong>Sentry Integration</strong>:
-
-<pre><code class="language-bash">npm install @sentry/node
-</code></pre>
-
-<pre><code class="language-typescript">// src/utils/error-tracker.ts
-<p>import * as Sentry from "@sentry/node";</p>
-
-<p>if (process.env.NODE_ENV === 'production') {</p>
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    environment: process.env.NODE_ENV,
-  });
-}
-
-<p>export const captureError = (error: Error, context?: any) =&gt; {</p>
-  if (process.env.NODE_ENV === 'production') {
-    Sentry.captureException(error, { extra: context });
-  }
-  console.error(error);
-<p>};</p>
-</code></pre>
-
-<h4>3. API Usage Monitoring</h4>
-
-<p>Monitor Anthropic API usage:</p>
-
-<pre><code class="language-typescript">// Track in ClaudeClient class
-<p>class ClaudeClient {</p>
-  async generate(...) {
-    const startTime = Date.now();
-    try {
-      const result = await this.client.generate(...);
-      this.logUsage({
-        duration: Date.now() - startTime,
-        tokens: result.usage?.total_tokens,
-        model: this.getModelName()
-      });
-      return result;
-    } catch (error) {
-      this.logError(error);
-      throw error;
-    }
-  }
-}
-</code></pre>
-
-<h4>4. Performance Metrics</h4>
-
-<p>Log execution times for key operations:</p>
-
-<pre><code class="language-typescript">// src/utils/metrics.ts
-<p>export const measureTime = async (name: string, fn: () =&gt; Promise&lt;any&gt;) =&gt; {</p>
-  const start = Date.now();
-  try {
-    const result = await fn();
-    const duration = Date.now() - start;
-    console.log(<code>[METRIC] ${name}: ${duration}ms</code>);
-    return result;
-  } catch (error) {
-    console.error(<code>[METRIC] ${name}: FAILED</code>);
-    throw error;
-  }
-<p>};</p>
-</code></pre>
-
-<h4>5. Health Checks</h4>
-
-<p>For Docker deployments, add health check endpoint:</p>
-
-<pre><code class="language-typescript">// src/health.ts
-<p>export const checkHealth = async () =&gt; {</p>
-  return {
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    dependencies: {
-      anthropic: await checkAnthropicAPI(),
-      playwright: await checkPlaywright(),
-      git: await checkGit(),
-    }
-  };
-<p>};</p>
-</code></pre>
-
-<h3>Logging Best Practices</h3>
-
-<p>Structure logs for easy parsing:</p>
-
-<pre><code class="language-typescript">// Use structured logging
-<p>console.log(JSON.stringify({</p>
-  level: 'info',
-  timestamp: new Date().toISOString(),
-  message: 'Scanning project',
-  projectDir,
-  framework: detectedFramework
-<p>}));</p>
-</code></pre>
-
-<h3>Suggested Monitoring Dashboard</h3>
-
-<strong>Key Metrics to Track</strong>:
-<ul><li>Command execution frequency</li>
-<li>Average execution time per command</li>
-<li>Error rate by command type</li>
-<li>Anthropic API usage (tokens, costs)</li>
-<li>Playwright screenshot success rate</li>
-<li>Git operations success rate</li>
-</ul>
-<strong>Tools for Aggregation</strong>:
-<ul><li><strong>ELK Stack</strong> (self-hosted): Elasticsearch, Logstash, Kibana</li>
-<li><strong>Grafana + Loki</strong> (self-hosted)</li>
-<li><strong>DataDog</strong> (SaaS)</li>
-<li><strong>New Relic</strong> (SaaS)</li>
-</ul>
-<hr>
-
-<h2>Quick Start Checklist</h2>
-
-<ul><li>[ ] Node.js 18+ installed</li>
-<li>[ ] Dependencies installed (<code>npm install</code>)</li>
-<li>[ ] Playwright browsers installed (<code>npx playwright install</code>)</li>
-<li>[ ] <code>ANTHROPIC_API_KEY</code> environment variable set</li>
-<li>[ ] Project builds successfully (<code>npm run build</code>)</li>
-<li>[ ] CLI runs (<code>node dist/cli.js --help</code>)</li>
-<li>[ ] Optional: Mermaid CLI installed for diagrams</li>
-<li>[ ] Optional: Docker image built and tested</li>
-</ul>
 <h2>Troubleshooting</h2>
 
-<h3>Playwright Issues</h3>
-<pre><code class="language-bash"># Reinstall browsers with system dependencies
-<p>npx playwright install --with-deps</p>
+<h3>Issue: <code>ANTHROPIC_API_KEY</code> not found</h3>
+
+<strong>Symptom:</strong>
+<pre><code class="language-text">Error: ANTHROPIC_API_KEY environment variable is required
 </code></pre>
 
-<h3>Build Failures</h3>
-<pre><code class="language-bash"># Clear cache and rebuild
-<p>rm -rf dist/ node_modules/</p>
+<strong>Fix:</strong>
+<pre><code class="language-bash">export ANTHROPIC_API_KEY="sk-ant-api03-xxxxx"
+<h1>Or add to .env file</h1>
+</code></pre>
+
+<hr>
+
+<h3>Issue: TypeScript build fails</h3>
+
+<strong>Symptom:</strong>
+<pre><code class="language-text">error TS2307: Cannot find module '@anthropic-ai/sdk'
+</code></pre>
+
+<strong>Fix:</strong>
+<pre><code class="language-bash">rm -rf node_modules package-lock.json
 <p>npm install</p>
 <p>npm run build</p>
 </code></pre>
 
-<h3>Anthropic API Errors</h3>
-<ul><li>Verify API key is correct and active</li>
-<li>Check API usage limits at console.anthropic.com</li>
-<li>Ensure billing is set up</li>
-</ul>
-<h3>Permission Errors (npm global install)</h3>
-<pre><code class="language-bash"># Use npx instead of global install
-<p>npx athena &lt;command&gt;</p>
+<hr>
 
-<h1>Or fix npm permissions</h1>
+<h3>Issue: Playwright browsers not installed</h3>
+
+<strong>Symptom:</strong>
+<pre><code class="language-text">Error: browserType.launch: Executable doesn't exist at /path/to/chromium
+</code></pre>
+
+<strong>Fix:</strong>
+<pre><code class="language-bash">npx playwright install chromium
+<h1>Or install all browsers</h1>
+<p>npx playwright install</p>
+</code></pre>
+
+<hr>
+
+<h3>Issue: Port already in use (for dev server)</h3>
+
+<strong>Symptom:</strong>
+<pre><code class="language-text">Error: listen EADDRINUSE: address already in use :::3000
+</code></pre>
+
+<strong>Fix:</strong>
+<pre><code class="language-bash"># Find and kill process using port
+<p>lsof -ti:3000 | xargs kill -9</p>
+
+<h1>Or use a different port (if configurable)</h1>
+<p>PORT=3001 npm start</p>
+</code></pre>
+
+<hr>
+
+<h3>Issue: Permission denied on <code>npm link</code></h3>
+
+<strong>Symptom:</strong>
+<pre><code class="language-text">EACCES: permission denied, symlink
+</code></pre>
+
+<strong>Fix:</strong>
+<pre><code class="language-bash"># Option 1: Use sudo (not recommended)
+<p>sudo npm link</p>
+
+<h1>Option 2: Fix npm permissions</h1>
 <p>mkdir ~/.npm-global</p>
 <p>npm config set prefix '~/.npm-global'</p>
-<p>export PATH=~/.npm-global/bin:$PATH</p>
+<p>echo 'export PATH=~/.npm-global/bin:$PATH' &gt;&gt; ~/.bashrc</p>
+<p>source ~/.bashrc</p>
+<p>npm link</p>
+</code></pre>
+
+<hr>
+
+<h3>Issue: Mermaid diagrams not generating</h3>
+
+<strong>Symptom:</strong>
+<pre><code class="language-text">Warning: Mermaid CLI not available, skipping diagram generation
+</code></pre>
+
+<strong>Fix:</strong>
+<pre><code class="language-bash"># Install globally
+<p>npm install -g @mermaid-js/mermaid-cli</p>
+
+<h1>Verify installation</h1>
+<p>mmdc --version</p>
+</code></pre>
+
+<hr>
+
+<h3>Issue: Out of memory during build</h3>
+
+<strong>Symptom:</strong>
+<pre><code class="language-text">FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+</code></pre>
+
+<strong>Fix:</strong>
+<pre><code class="language-bash"># Increase Node.js memory limit
+<p>NODE_OPTIONS="--max-old-space-size=4096" npm run build</p>
+</code></pre>
+
+<hr>
+
+<h3>Issue: Git operations fail</h3>
+
+<strong>Symptom:</strong>
+<pre><code class="language-text">Error: fatal: not a git repository
+</code></pre>
+
+<strong>Fix:</strong>
+<p>This happens when scanning a non-git project. Either:</p>
+<pre><code class="language-bash"># Initialize git in target project
+<p>cd /path/to/project</p>
+<p>git init</p>
+
+<h1>Or skip git-dependent features (check CLI flags)</h1>
+<p>athena scan /path/to/project --no-git</p>
+</code></pre>
+
+<hr>
+
+<h3>Debugging Tips</h3>
+
+<strong>Enable verbose logging:</strong>
+<pre><code class="language-bash">DEBUG=athena:* npm start -- scan /path/to/project
+</code></pre>
+
+<strong>Check TypeScript compilation:</strong>
+<pre><code class="language-bash">npx tsc --noEmit
+</code></pre>
+
+<strong>Validate config file:</strong>
+<pre><code class="language-bash">cat .athenarc.json | jq .
+<h1>Should output valid JSON</h1>
+</code></pre>
+
+<strong>Test API connectivity:</strong>
+<pre><code class="language-bash">curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model":"claude-3-5-sonnet-20241022","max_tokens":1024,"messages":[{"role":"user","content":"Hi"}]}'
 </code></pre>
 <hr>
 
@@ -742,8 +550,6 @@
 
 <ul><li><a href="README.md">Readme</a></li>
 <li><a href="ARCHITECTURE.md">Architecture</a></li>
-<li><a href="API.md">Api</a></li>
-<li><a href="CONTRIBUTING.md">Contributing</a></li>
 </ul>
     <div class="footer">
       Generated by Athena &mdash; &copy; 2026 TheForge, LLC

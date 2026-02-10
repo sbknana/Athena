@@ -1,0 +1,35 @@
+Usage: athena [options] [command]
+
+Project scanner and manifest generator for AI-assisted development
+
+Options:
+  -V, --version            output the version number
+  -h, --help               display help for command
+
+Commands:
+  generate [options]       Scan a project directory and generate a
+                           project-manifest.json
+  generate-docs [options]  Generate documentation (README, ARCHITECTURE, API,
+                           DEPLOYMENT, CONTRIBUTING) using Claude API
+  changelog [options]      Generate CHANGELOG.md (and optionally HISTORY.md)
+                           from git history
+  init [options]           Initialize athena.config.json in a project directory
+  check [options]          Check if docs are stale (exit 1 if stale, for CI
+                           integration)
+  stamp [options]          Record current source file hashes (run after doc
+                           generation to mark docs as fresh)
+  watch [options]          Watch project source files and flag when docs become
+                           stale
+  schedule [options]       Show cron expression for scheduling periodic doc
+                           regeneration
+  capture-cli [options]    Auto-capture CLI tool output as SVG screenshots
+                           (detects commands from package.json, bin,
+                           athena.config.json)
+  diagrams [options]       Generate Mermaid architecture diagrams from code
+                           analysis (dependency graph, ER diagram, API flow,
+                           component tree, file structure, data flow)
+  screenshots [options]    Capture web app screenshots using Playwright
+                           (auto-discovers routes, supports themes/viewports)
+  render-html [options]    Convert markdown docs to a styled HTML site with
+                           sidebar navigation, dark theme, and embedded diagrams
+  help [command]           display help for command

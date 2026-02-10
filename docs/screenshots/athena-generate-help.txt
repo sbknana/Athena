@@ -1,0 +1,11 @@
+Usage: athena generate [options]
+
+Scan a project directory and generate a project-manifest.json
+
+Options:
+  --project <path>  Path to the project directory to scan
+  --output <path>   Output path for the manifest file (default:
+                    project-manifest.json in project dir)
+  --pretty          Pretty-print the JSON output (default: true)
+  --no-pretty       Minify the JSON output
+  -h, --help        display help for command

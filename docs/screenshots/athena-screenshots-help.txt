@@ -1,0 +1,18 @@
+Usage: athena screenshots [options]
+
+Capture web app screenshots using Playwright (auto-discovers routes, supports
+themes/viewports)
+
+Options:
+  --project <path>     Path to the project directory
+  --url <url>          Base URL of running app (skips dev server auto-start)
+  --output <path>      Output directory (default: <project>/docs/screenshots)
+  --viewports <list>   Comma-separated viewports: mobile,tablet,desktop,wide
+                       (default: "mobile,desktop")
+  --themes <list>      Comma-separated themes: light,dark (default:
+                       "light,dark")
+  --full-page          Capture full scrollable page (default: false)
+  --timeout <ms>       Navigation timeout in milliseconds (default: "30000")
+  --dev-command <cmd>  Custom dev server start command
+  --dev-port <port>    Dev server port
+  -h, --help           display help for command

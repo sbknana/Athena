@@ -1,0 +1,17 @@
+Scanning project: /srv/forge-share/AI_Stuff/Sentinel
+  Detecting framework...
+  Framework: express, Language: javascript
+  Parsing source files...
+  Found: 54 functions, 0 classes, 0 exports, 0 components
+  Reading context files...
+  Detecting routes...
+  Found: 0 routes, 36 API endpoints
+
+Manifest written to: /srv/forge-share/AI_Stuff/Sentinel/project-manifest.json
+  Framework: express
+  Language: javascript
+  Routes: 0
+  API Endpoints: 36
+  Components: 0
+  Functions: 54
+  Classes: 0

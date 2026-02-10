@@ -28,3 +28,18 @@ export {
   loadManifest,
   type FullScreenshotManifest,
 } from "./manifest.js";
+
+export {
+  runCLIScreenshotEngine,
+  loadCLIScreenshotConfig,
+} from "./cli-screenshot-engine.js";
+
+export { detectCLICommands } from "./cli-detector.js";
+
+export {
+  generateRunConfigs,
+  runCLICommand,
+  filterUsefulResults,
+} from "./cli-runner.js";
+
+export { renderAnsiToSvg, renderToSvgFile } from "./ansi-renderer.js";

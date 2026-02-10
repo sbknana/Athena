@@ -429,3 +429,44 @@ export interface CLIScreenshotEngineResult {
   failures: number;
   duration: number;
 }
+
+// --- Diagram Generator Types ---
+
+export type DiagramType =
+  | "dependency"
+  | "imports"
+  | "db-schema"
+  | "api-flow"
+  | "component-tree"
+  | "file-structure"
+  | "data-flow";
+
+export interface DiagramGeneratorConfig {
+  projectDir: string;
+  outputDir: string;
+  types?: DiagramType[];
+  render?: boolean;
+  format?: "png" | "svg" | "both";
+  markdown?: boolean;
+}
+
+export interface DiagramInfo {
+  type: DiagramType;
+  name: string;
+  mermaidCode: string;
+  mmdPath: string;
+  renderResults: Array<{
+    name: string;
+    format: string;
+    outputPath: string;
+    success: boolean;
+    error?: string;
+  }>;
+}
+
+export interface DiagramResult {
+  diagrams: DiagramInfo[];
+  errors: Array<{ type: DiagramType; error: string }>;
+  outputDir: string;
+  markdownPath?: string;
+}

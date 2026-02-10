@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARCHITECTURE - athena</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #0d1117; color: #c9d1d9; display: flex; min-height: 100vh;
+    }
+    .sidebar {
+      width: 260px; background: #161b22; border-right: 1px solid #30363d;
+      padding: 1rem 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto;
+    }
+    .sidebar-header {
+      padding: 1rem 1.25rem; font-size: 1.1rem; font-weight: 700;
+      border-bottom: 1px solid #30363d; margin-bottom: 0.5rem;
+      color: #58a6ff;
+    }
+    .nav-item {
+      display: block; padding: 0.5rem 1.25rem; color: #c9d1d9;
+      text-decoration: none; font-size: 0.9rem;
+      border-left: 3px solid transparent; transition: all 0.15s;
+    }
+    .nav-item:hover { background: #1f6feb33; }
+    .nav-item.active {
+      background: #1f6feb33; border-left-color: #58a6ff; font-weight: 600;
+    }
+    .content {
+      margin-left: 260px; padding: 2rem 3rem; max-width: 900px; width: 100%;
+    }
+    h1 { font-size: 2rem; margin: 0.5em 0; border-bottom: 1px solid #30363d; padding-bottom: 0.3em; }
+    h2 { font-size: 1.5rem; margin: 1.5em 0 0.5em; border-bottom: 1px solid #30363d; padding-bottom: 0.2em; }
+    h3 { font-size: 1.25rem; margin: 1.2em 0 0.4em; }
+    h4 { font-size: 1.1rem; margin: 1em 0 0.3em; }
+    p { margin: 0.6em 0; line-height: 1.6; }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      background: #1c2128; padding: 0.2em 0.4em; border-radius: 4px;
+      font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.85em;
+    }
+    pre {
+      background: #1c2128; padding: 1em; border-radius: 8px;
+      overflow-x: auto; margin: 1em 0; border: 1px solid #30363d;
+    }
+    pre code { background: none; padding: 0; }
+    table {
+      border-collapse: collapse; width: 100%; margin: 1em 0;
+    }
+    td, th {
+      border: 1px solid #30363d; padding: 0.5em 0.75em; text-align: left;
+    }
+    tr:nth-child(even) { background: #1c2128; }
+    ul { padding-left: 1.5em; margin: 0.5em 0; }
+    li { margin: 0.3em 0; line-height: 1.5; }
+    hr { border: none; border-top: 1px solid #30363d; margin: 2em 0; }
+    img { border: 1px solid #30363d; }
+    .mermaid { margin: 1.5em 0; }
+    .footer {
+      margin-top: 4em; padding-top: 1em; border-top: 1px solid #30363d;
+      font-size: 0.8em; opacity: 0.6;
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; padding: 1rem; }
+    }
+  </style>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "dark" });
+  </script>
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">athena</div>
+    <a href="api.html" class="nav-item">API</a>
+          <a href="architecture.html" class="nav-item active">ARCHITECTURE</a>
+          <a href="contributing.html" class="nav-item">CONTRIBUTING</a>
+          <a href="deployment.html" class="nav-item">DEPLOYMENT</a>
+          <a href="readme.html" class="nav-item">README</a>
+          <a href="diagrams.html" class="nav-item">DIAGRAMS</a>
+  </nav>
+  <main class="content">
+    <h1>ARCHITECTURE.md</h1>
+
+<h2>Table of Contents</h2>
+
+<ul><li><a href="#architecturemd">ARCHITECTURE.md</a></li>
+</ul>  - <a href="#overview">Overview</a>
+  - <a href="#system-architecture">System Architecture</a>
+  - <a href="#component-tree">Component Tree</a>
+  - <a href="#data-flow">Data Flow</a>
+  - <a href="#directory-structure">Directory Structure</a>
+  - <a href="#design-decisions">Design Decisions</a>
+    - <a href="#1-ai-powered-content-generation">1. AI-Powered Content Generation</a>
+    - <a href="#2-mermaid-for-diagrams">2. Mermaid for Diagrams</a>
+    - <a href="#3-playwright-for-screenshots">3. Playwright for Screenshots</a>
+    - <a href="#4-modular-pipeline-architecture">4. Modular Pipeline Architecture</a>
+    - <a href="#5-git-integration-for-changelogs">5. Git Integration for Changelogs</a>
+    - <a href="#6-configuration-driven-behavior">6. Configuration-Driven Behavior</a>
+    - <a href="#7-typescript-with-nodejs">7. TypeScript with Node.js</a>
+  - <a href="#dependencies">Dependencies</a>
+    - <a href="#anthropic-aisdk-0390">@anthropic-ai/sdk (^0.39.0)</a>
+    - <a href="#commander-1300">commander (^13.0.0)</a>
+    - <a href="#diff-700">diff (^7.0.0)</a>
+    - <a href="#glob-1100">glob (^11.0.0)</a>
+    - <a href="#playwright-1582">playwright (^1.58.2)</a>
+  - <a href="#related-documentation">Related Documentation</a>
+
+<h2>Overview</h2>
+
+<p>Athena is a TypeScript-based documentation generation tool that leverages AI (Claude) to automatically create and maintain project documentation. The system scans source code, analyzes project structure, generates diagrams using Mermaid, captures screenshots via Playwright, and synthesizes comprehensive documentation through the Anthropic Claude API.</p>
+
+<p>The architecture follows a modular pipeline design with clear separation of concerns: scanning/analysis, diagram generation, screenshot capture, AI-powered content generation, and document assembly. Each stage processes the project manifest independently, allowing for incremental documentation updates and flexible customization through configuration files.</p>
+
+<p>The tool is designed as a CLI application with a focus on developer workflows, supporting Git integration for changelog generation, diff-based freshness detection, and automated visual documentation through programmatic browser automation.</p>
+
+<h2>System Architecture</h2>
+
+<div class="mermaid">graph TD
+    CLI[CLI Entry Point] --&gt; Config[Config Loader]
+    CLI --&gt; Scanner[Project Scanner]
+    
+    Scanner --&gt; ContextReader[Context Reader]
+    Scanner --&gt; GitParser[Git Parser]
+    
+    Config --&gt; DocGen[Doc Generator]
+    Scanner --&gt; DocGen
+    
+    DocGen --&gt; DiagramGen[Diagram Generator]
+    DocGen --&gt; ClaudeClient[Claude AI Client]
+    DocGen --&gt; Screenshots[Screenshot System]
+    
+    Screenshots --&gt; DevServer[Dev Server Manager]
+    Screenshots --&gt; CLIRunner[CLI Runner]
+    Screenshots --&gt; Playwright[Playwright Browser]
+    
+    DiagramGen --&gt; MermaidCLI[Mermaid CLI Renderer]
+    
+    ClaudeClient --&gt; AnthropicAPI[Anthropic API]
+    
+    DocGen --&gt; DocHelpers[Doc Helpers]
+    DocHelpers --&gt; Output[Generated Documentation]
+    
+    GitParser --&gt; Changelog[Changelog Data]
+    Changelog --&gt; DocGen
+</div>
+
+<h2>Component Tree</h2>
+
+<div class="mermaid">graph TD
+    Root[athena] --&gt; CLI[cli.ts]
+    Root --&gt; Scanner[scanner.ts]
+    Root --&gt; Config[config.ts]
+    Root --&gt; Freshness[freshness.ts]
+    
+    Root --&gt; Generators[generators/]
+    Generators --&gt; DocGenerator[doc-generator.ts]
+    Generators --&gt; ClaudeClient[claude-client.ts]
+    
+    Root --&gt; Diagrams[diagrams/]
+    Diagrams --&gt; DiagramGenerator[diagram-generator.ts]
+    Diagrams --&gt; Renderer[renderer.ts]
+    
+    Root --&gt; Screenshots[screenshots/]
+    Screenshots --&gt; DevServer[dev-server.ts]
+    Screenshots --&gt; CLIRunner[cli-runner.ts]
+    
+    Root --&gt; Scanners[scanners/]
+    Scanners --&gt; ContextReader[context-reader.ts]
+    
+    Root --&gt; Changelog[changelog/]
+    Changelog --&gt; GitParser[git-parser.ts]
+    
+    Root --&gt; Utils[utils/]
+    Utils --&gt; DocHelpers[doc-helpers.ts]
+</div>
+
+<h2>Data Flow</h2>
+
+<div class="mermaid">sequenceDiagram
+    participant User
+    participant CLI
+    participant Scanner
+    participant DocGenerator
+    participant DiagramGenerator
+    participant ClaudeClient
+    participant ScreenshotSystem
+    participant Output
+
+    User-&gt;&gt;CLI: athena generate
+    CLI-&gt;&gt;Scanner: scanProject(projectDir)
+    Scanner-&gt;&gt;Scanner: Analyze source files
+    Scanner-&gt;&gt;GitParser: getTags(), getGitHubUrl()
+    Scanner--&gt;&gt;CLI: Project Manifest
+    
+    CLI-&gt;&gt;DocGenerator: generate(manifest, config)
+    
+    DocGenerator-&gt;&gt;DiagramGenerator: generate(manifest)
+    DiagramGenerator-&gt;&gt;DiagramGenerator: Generate Mermaid diagrams
+    DiagramGenerator--&gt;&gt;DocGenerator: Diagram markdown
+    
+    DocGenerator-&gt;&gt;ScreenshotSystem: Capture screenshots
+    ScreenshotSystem-&gt;&gt;DevServer: Start dev server
+    ScreenshotSystem-&gt;&gt;Playwright: Navigate &amp; screenshot
+    ScreenshotSystem--&gt;&gt;DocGenerator: Screenshot paths
+    
+    DocGenerator-&gt;&gt;ClaudeClient: generate(prompt, manifest)
+    ClaudeClient-&gt;&gt;AnthropicAPI: Send context + instructions
+    AnthropicAPI--&gt;&gt;ClaudeClient: Generated content
+    ClaudeClient--&gt;&gt;DocGenerator: Documentation sections
+    
+    DocGenerator-&gt;&gt;DocHelpers: Build cross-references
+    DocGenerator-&gt;&gt;DocHelpers: Generate TOC
+    DocGenerator-&gt;&gt;DocGenerator: Assemble final docs
+    DocGenerator--&gt;&gt;Output: Write README.md, etc.
+    
+    Output--&gt;&gt;User: Documentation generated
+</div>
+
+<h2>Directory Structure</h2>
+
+<pre><code class="language-text">athena/
+<p>├── src/</p>
+<p>│   ├── cli.ts                      # CLI entry point</p>
+<p>│   ├── scanner.ts                  # Project scanning orchestrator</p>
+<p>│   ├── config.ts                   # Configuration loading</p>
+<p>│   ├── freshness.ts                # Document freshness checker</p>
+<p>│   ├── generators/</p>
+<p>│   │   ├── doc-generator.ts        # Main documentation generator</p>
+<p>│   │   └── claude-client.ts        # Anthropic API client</p>
+<p>│   ├── diagrams/</p>
+<p>│   │   ├── diagram-generator.ts    # Mermaid diagram generation</p>
+<p>│   │   └── renderer.ts             # Diagram rendering utilities</p>
+<p>│   ├── screenshots/</p>
+<p>│   │   ├── dev-server.ts           # Development server manager</p>
+<p>│   │   └── cli-runner.ts           # CLI-based screenshot capture</p>
+<p>│   ├── scanners/</p>
+<p>│   │   └── context-reader.ts       # Source code context extraction</p>
+<p>│   ├── changelog/</p>
+<p>│   │   └── git-parser.ts           # Git history parsing</p>
+<p>│   └── utils/</p>
+<p>│       └── doc-helpers.ts          # Documentation formatting utilities</p>
+<p>├── dist/                           # Compiled JavaScript output</p>
+<p>└── package.json</p>
+</code></pre>
+
+<h2>Design Decisions</h2>
+
+<h3>1. AI-Powered Content Generation</h3>
+<strong>Decision:</strong> Use Anthropic Claude API for documentation synthesis rather than template-based generation.
+
+<strong>Rationale:</strong> AI can understand code context, infer architectural patterns, and generate natural language descriptions that adapt to different project structures. This eliminates the need for rigid templates while maintaining consistency through structured prompts.
+
+<h3>2. Mermaid for Diagrams</h3>
+<strong>Decision:</strong> Generate diagrams using Mermaid syntax rather than image-based tools.
+
+<strong>Rationale:</strong> Mermaid diagrams are text-based, version-controllable, and render natively in GitHub/GitLab markdown. This keeps documentation maintainable and reduces binary asset bloat in repositories.
+
+<h3>3. Playwright for Screenshots</h3>
+<strong>Decision:</strong> Use Playwright for screenshot capture instead of headless Chrome directly.
+
+<strong>Rationale:</strong> Playwright provides cross-browser support, better stability, and more reliable element detection. It abstracts browser automation complexities and integrates well with modern development servers.
+
+<h3>4. Modular Pipeline Architecture</h3>
+<strong>Decision:</strong> Separate scanning, generation, and rendering into distinct modules with clear interfaces.
+
+<strong>Rationale:</strong> Modularity allows independent testing, easier maintenance, and flexibility to swap implementations (e.g., different AI providers or diagram renderers) without cascading changes.
+
+<h3>5. Git Integration for Changelogs</h3>
+<strong>Decision:</strong> Parse Git tags and commit history rather than maintaining separate changelog files.
+
+<strong>Rationale:</strong> Git is the source of truth for project history. Parsing tags and commits ensures changelogs stay synchronized with actual releases and reduces manual maintenance burden.
+
+<h3>6. Configuration-Driven Behavior</h3>
+<strong>Decision:</strong> Support external configuration files rather than command-line flags for customization.
+
+<strong>Rationale:</strong> Configuration files (<code>.athenarc</code>, etc.) provide better ergonomics for complex setups, version-controlled settings, and team-wide consistency without lengthy CLI invocations.
+
+<h3>7. TypeScript with Node.js</h3>
+<strong>Decision:</strong> Build as a TypeScript CLI tool targeting Node.js rather than a web service.
+
+<strong>Rationale:</strong> Documentation generation is a developer toolchain task best suited for local execution. TypeScript provides type safety for API integrations and complex data transformations, while Node.js ensures broad compatibility with existing developer environments.
+
+<h2>Dependencies</h2>
+
+<h3>@anthropic-ai/sdk (^0.39.0)</h3>
+<p>Official Anthropic SDK for Claude API integration. Chosen for type-safe API interactions, automatic request formatting, and built-in error handling. Provides streaming support for long-form content generation and token usage tracking for cost optimization.</p>
+
+<h3>commander (^13.0.0)</h3>
+<p>De facto standard for Node.js CLI applications. Chosen for mature API, automatic help generation, subcommand support, and excellent TypeScript typings. Simplifies argument parsing and command routing without external configuration.</p>
+
+<h3>diff (^7.0.0)</h3>
+<p>Text diffing library for detecting documentation staleness. Chosen for its implementation of the Myers diff algorithm, which provides human-readable change detection. Used to compare generated documentation against existing files to determine update necessity.</p>
+
+<h3>glob (^11.0.0)</h3>
+<p>File pattern matching for project scanning. Chosen for fast, cross-platform glob expansion with gitignore support. Essential for discovering source files while respecting project ignore patterns.</p>
+
+<h3>playwright (^1.58.2)</h3>
+<p>Browser automation for screenshot capture. Chosen over Puppeteer for superior cross-browser support (Chromium, Firefox, WebKit), better network interception, and more reliable element waiting strategies. Provides consistent screenshot results across different environments.</p>
+<hr>
+
+<h2>Related Documentation</h2>
+
+<ul><li><a href="README.md">Readme</a></li>
+<li><a href="API.md">Api</a></li>
+<li><a href="DEPLOYMENT.md">Deployment</a></li>
+<li><a href="CONTRIBUTING.md">Contributing</a></li>
+</ul>
+    <div class="footer">
+      Generated by Athena &mdash; &copy; 2026 TheForge, LLC
+    </div>
+  </main>
+</body>
+</html>

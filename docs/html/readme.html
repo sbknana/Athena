@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>README - athena</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #0d1117; color: #c9d1d9; display: flex; min-height: 100vh;
+    }
+    .sidebar {
+      width: 260px; background: #161b22; border-right: 1px solid #30363d;
+      padding: 1rem 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto;
+    }
+    .sidebar-header {
+      padding: 1rem 1.25rem; font-size: 1.1rem; font-weight: 700;
+      border-bottom: 1px solid #30363d; margin-bottom: 0.5rem;
+      color: #58a6ff;
+    }
+    .nav-item {
+      display: block; padding: 0.5rem 1.25rem; color: #c9d1d9;
+      text-decoration: none; font-size: 0.9rem;
+      border-left: 3px solid transparent; transition: all 0.15s;
+    }
+    .nav-item:hover { background: #1f6feb33; }
+    .nav-item.active {
+      background: #1f6feb33; border-left-color: #58a6ff; font-weight: 600;
+    }
+    .content {
+      margin-left: 260px; padding: 2rem 3rem; max-width: 900px; width: 100%;
+    }
+    h1 { font-size: 2rem; margin: 0.5em 0; border-bottom: 1px solid #30363d; padding-bottom: 0.3em; }
+    h2 { font-size: 1.5rem; margin: 1.5em 0 0.5em; border-bottom: 1px solid #30363d; padding-bottom: 0.2em; }
+    h3 { font-size: 1.25rem; margin: 1.2em 0 0.4em; }
+    h4 { font-size: 1.1rem; margin: 1em 0 0.3em; }
+    p { margin: 0.6em 0; line-height: 1.6; }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      background: #1c2128; padding: 0.2em 0.4em; border-radius: 4px;
+      font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.85em;
+    }
+    pre {
+      background: #1c2128; padding: 1em; border-radius: 8px;
+      overflow-x: auto; margin: 1em 0; border: 1px solid #30363d;
+    }
+    pre code { background: none; padding: 0; }
+    table {
+      border-collapse: collapse; width: 100%; margin: 1em 0;
+    }
+    td, th {
+      border: 1px solid #30363d; padding: 0.5em 0.75em; text-align: left;
+    }
+    tr:nth-child(even) { background: #1c2128; }
+    ul { padding-left: 1.5em; margin: 0.5em 0; }
+    li { margin: 0.3em 0; line-height: 1.5; }
+    hr { border: none; border-top: 1px solid #30363d; margin: 2em 0; }
+    img { border: 1px solid #30363d; }
+    .mermaid { margin: 1.5em 0; }
+    .footer {
+      margin-top: 4em; padding-top: 1em; border-top: 1px solid #30363d;
+      font-size: 0.8em; opacity: 0.6;
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; padding: 1rem; }
+    }
+  </style>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "dark" });
+  </script>
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">athena</div>
+    <a href="api.html" class="nav-item">API</a>
+          <a href="architecture.html" class="nav-item">ARCHITECTURE</a>
+          <a href="contributing.html" class="nav-item">CONTRIBUTING</a>
+          <a href="deployment.html" class="nav-item">DEPLOYMENT</a>
+          <a href="readme.html" class="nav-item active">README</a>
+          <a href="diagrams.html" class="nav-item">DIAGRAMS</a>
+  </nav>
+  <main class="content">
+    <h1>Athena</h1>
+
+<h2>Table of Contents</h2>
+
+<ul><li><a href="#athena">Athena</a></li>
+</ul>  - <a href="#description">Description</a>
+  - <a href="#features">Features</a>
+  - <a href="#quick-start">Quick Start</a>
+    - <a href="#installation">Installation</a>
+    - <a href="#configure">Configure</a>
+    - <a href="#run">Run</a>
+<ul><li><a href="#scan-and-generate-documentation">Scan and generate documentation</a></li>
+<li><a href="#check-documentation-freshness">Check documentation freshness</a></li>
+<li><a href="#generate-with-screenshots">Generate with screenshots</a></li>
+</ul>  - <a href="#usage">Usage</a>
+    - <a href="#basic-documentation-generation">Basic Documentation Generation</a>
+<ul><li><a href="#generate-all-documentation">Generate all documentation</a></li>
+<li><a href="#generate-specific-docs">Generate specific docs</a></li>
+</ul>    - <a href="#screenshot-capture">Screenshot Capture</a>
+<ul><li><a href="#capture-screenshots-with-dev-server">Capture screenshots with dev server</a></li>
+<li><a href="#use-existing-server">Use existing server</a></li>
+</ul>    - <a href="#configuration">Configuration</a>
+<ul><li><a href="#check-if-project-has-config">Check if project has config</a></li>
+<li><a href="#show-current-configuration">Show current configuration</a></li>
+</ul>    - <a href="#freshness-checking">Freshness Checking</a>
+<ul><li><a href="#check-documentation-freshness">Check documentation freshness</a></li>
+<li><a href="#verbose-output-with-details">Verbose output with details</a></li>
+</ul>  - <a href="#tech-stack">Tech Stack</a>
+  - <a href="#configuration">Configuration</a>
+    - <a href="#environment-variables">Environment Variables</a>
+<ul><li><a href="#required-for-ai-generation">Required for AI generation</a></li>
+</ul>    - <a href="#configuration-file-athenayml">Configuration File (athena.yml)</a>
+  - <a href="#contributing">Contributing</a>
+  - <a href="#license">License</a>
+  - <a href="#related-documentation">Related Documentation</a>
+
+<p>> Automated documentation generator powered by AI that keeps your project docs fresh and comprehensive</p>
+
+<h2>Description</h2>
+
+<p>Athena is an intelligent documentation tool that automatically scans your codebase, analyzes its structure, and generates comprehensive documentation using Claude AI. It understands your project's architecture, features, and functionality to create high-quality README files, changelogs, and architectural diagrams without manual effort.</p>
+
+<p>Built for modern TypeScript projects, Athena integrates seamlessly into your development workflow. It analyzes source code, captures screenshots, tracks git history, and produces documentation that stays in sync with your codebase. Whether you're starting a new project or maintaining an established one, Athena ensures your documentation is always accurate and up-to-date.</p>
+
+<p>The tool goes beyond simple code documentation by generating visual aids like Mermaid diagrams, embedding screenshots, and creating interactive documentation that helps developers quickly understand and contribute to your project.</p>
+
+<h2>Features</h2>
+
+<ul><li><strong>Automated Code Analysis</strong> — Scans TypeScript projects to extract functions, classes, and dependencies</li>
+<li><strong>AI-Powered Content Generation</strong> — Uses Claude AI to generate natural, comprehensive documentation</li>
+<li><strong>Screenshot Integration</strong> — Captures and embeds application screenshots using Playwright</li>
+<li><strong>Diagram Generation</strong> — Creates architectural diagrams with Mermaid</li>
+<li><strong>Changelog Automation</strong> — Parses git history and tags to generate changelogs</li>
+<li><strong>Freshness Tracking</strong> — Monitors documentation staleness and recommends updates</li>
+<li><strong>Configuration Management</strong> — Flexible YAML-based project configuration</li>
+<li><strong>Cross-Reference Building</strong> — Links related documentation sections automatically</li>
+<li><strong>Diff Analysis</strong> — Shows documentation changes before committing updates</li>
+</ul>
+<h2>Quick Start</h2>
+
+<h3>Installation</h3>
+
+<pre><code class="language-bash">npm install -g athena
+</code></pre>
+
+<h3>Configure</h3>
+
+<p>Create an <code>athena.yml</code> file in your project root:</p>
+
+<pre><code class="language-yaml">project:
+  name: my-project
+  framework: react
+  language: typescript
+
+<p>ai:</p>
+  provider: claude
+  model: claude-3-5-sonnet-20241022
+
+<p>docs:</p>
+  output: ./docs
+  readme: true
+  changelog: true
+</code></pre>
+
+<h3>Run</h3>
+
+<pre><code class="language-bash"># Scan and generate documentation
+<p>athena generate</p>
+
+<h1>Check documentation freshness</h1>
+<p>athena check</p>
+
+<h1>Generate with screenshots</h1>
+<p>athena generate --screenshots</p>
+</code></pre>
+
+<h2>Usage</h2>
+
+<h3>Basic Documentation Generation</h3>
+
+<pre><code class="language-bash"># Generate all documentation
+<p>athena generate</p>
+
+<h1>Generate specific docs</h1>
+<p>athena generate --readme-only</p>
+<p>athena generate --changelog-only</p>
+</code></pre>
+
+<h3>Screenshot Capture</h3>
+
+<pre><code class="language-bash"># Capture screenshots with dev server
+<p>athena screenshots --dev-command "npm start" --port 3000</p>
+
+<h1>Use existing server</h1>
+<p>athena screenshots --url http://localhost:3000</p>
+</code></pre>
+
+<h3>Configuration</h3>
+
+<pre><code class="language-bash"># Check if project has config
+<p>athena config check</p>
+
+<h1>Show current configuration</h1>
+<p>athena config show</p>
+</code></pre>
+
+<h3>Freshness Checking</h3>
+
+<pre><code class="language-bash"># Check documentation freshness
+<p>athena check</p>
+
+<h1>Verbose output with details</h1>
+<p>athena check --verbose</p>
+</code></pre>
+
+<h2>Tech Stack</h2>
+
+<ul><li><strong>Language</strong>: TypeScript</li>
+<li><strong>AI Provider</strong>: Anthropic Claude API (<code>@anthropic-ai/sdk</code>)</li>
+<li><strong>CLI Framework</strong>: Commander.js</li>
+<li><strong>Screenshot Tool</strong>: Playwright</li>
+<li><strong>Diagram Rendering</strong>: Mermaid CLI</li>
+<li><strong>File Globbing</strong>: glob</li>
+<li><strong>Diff Generation</strong>: diff</li>
+</ul>
+<h2>Configuration</h2>
+
+<h3>Environment Variables</h3>
+
+<pre><code class="language-bash"># Required for AI generation
+<p>ANTHROPIC_API_KEY=your_api_key_here</p>
+</code></pre>
+
+<h3>Configuration File (athena.yml)</h3>
+
+<pre><code class="language-yaml">project:
+  name: string          # Project name
+  framework: string     # Framework (react, vue, next, etc.)
+  language: string      # Primary language
+
+<p>ai:</p>
+  provider: string      # AI provider (claude)
+  model: string         # Model name
+  max_tokens: number    # Optional: token limit
+
+<p>docs:</p>
+  output: string        # Documentation output directory
+  readme: boolean       # Generate README.md
+  changelog: boolean    # Generate CHANGELOG.md
+  diagrams: boolean     # Generate architecture diagrams
+
+<p>screenshots:</p>
+  enabled: boolean      # Enable screenshot capture
+  paths: string[]       # Routes to capture
+</code></pre>
+
+<h2>Contributing</h2>
+
+<p>Contributions are welcome! Please see <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> for guidelines on how to contribute to Athena.</p>
+
+<h2>License</h2>
+
+<p>MIT</p>
+<hr>
+
+<h2>Related Documentation</h2>
+
+<ul><li><a href="ARCHITECTURE.md">Architecture</a></li>
+<li><a href="API.md">Api</a></li>
+<li><a href="DEPLOYMENT.md">Deployment</a></li>
+<li><a href="CONTRIBUTING.md">Contributing</a></li>
+</ul>
+    <div class="footer">
+      Generated by Athena &mdash; &copy; 2026 TheForge, LLC
+    </div>
+  </main>
+</body>
+</html>

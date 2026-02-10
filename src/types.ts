@@ -171,7 +171,7 @@ export interface DocGenerationResult {
 
 // --- Screenshot Engine Types ---
 
-export type ViewportName = "mobile" | "tablet" | "desktop";
+export type ViewportName = "mobile" | "tablet" | "desktop" | "wide";
 
 export type ThemeName = "light" | "dark";
 

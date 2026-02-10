@@ -5,7 +5,7 @@
 import { Command } from "commander";
 import { resolve, join } from "node:path";
 import { readFile, writeFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { scanProject } from "./scanner.js";
 import {
   DocGenerator,
@@ -21,11 +21,15 @@ import {
   hashSourceFiles,
   saveFreshnessRecord,
 } from "./freshness.js";
-import type { DocType, ModelTier, CLIScreenshotConfig, DiagramType } from "./types.js";
+import type { DocType, ModelTier, CLIScreenshotConfig, DiagramType, ScreenshotEngineConfig, ViewportConfig, ThemeName } from "./types.js";
 import {
   runCLIScreenshotEngine,
   loadCLIScreenshotConfig,
 } from "./screenshots/cli-screenshot-engine.js";
+import {
+  runScreenshotEngine,
+  loadScreenshotConfig,
+} from "./screenshots/index.js";
 import { DiagramGenerator } from "./diagrams/index.js";
 
 const program = new Command();
@@ -951,5 +955,501 @@ program
       }
     }
   );
+
+
+// --- Web App Screenshot Command (Playwright) ---
+
+program
+  .command("screenshots")
+  .description(
+    "Capture web app screenshots using Playwright (auto-discovers routes, supports themes/viewports)"
+  )
+  .requiredOption("--project <path>", "Path to the project directory")
+  .option("--url <url>", "Base URL of running app (skips dev server auto-start)")
+  .option("--output <path>", "Output directory (default: <project>/docs/screenshots)")
+  .option(
+    "--viewports <list>",
+    "Comma-separated viewports: mobile,tablet,desktop,wide",
+    "mobile,desktop"
+  )
+  .option("--themes <list>", "Comma-separated themes: light,dark", "light,dark")
+  .option("--full-page", "Capture full scrollable page", false)
+  .option("--timeout <ms>", "Navigation timeout in milliseconds", "30000")
+  .option("--dev-command <cmd>", "Custom dev server start command")
+  .option("--dev-port <port>", "Dev server port")
+  .action(
+    async (options: {
+      project: string;
+      url?: string;
+      output?: string;
+      viewports: string;
+      themes: string;
+      fullPage: boolean;
+      timeout: string;
+      devCommand?: string;
+      devPort?: string;
+    }) => {
+      const projectDir = resolve(options.project);
+
+      if (!existsSync(projectDir)) {
+        console.error(`Error: Project directory does not exist: ${projectDir}`);
+        process.exit(1);
+      }
+
+      const outputDir = options.output
+        ? resolve(options.output)
+        : join(projectDir, "docs", "screenshots");
+
+      // Parse viewports
+      const VIEWPORT_MAP: Record<string, ViewportConfig> = {
+        mobile: { name: "mobile", width: 375, height: 812 },
+        tablet: { name: "tablet", width: 768, height: 1024 },
+        desktop: { name: "desktop", width: 1280, height: 800 },
+        wide: { name: "wide", width: 1920, height: 1080 },
+      };
+
+      const viewportNames = options.viewports.split(",").map((v) => v.trim());
+      const viewports: ViewportConfig[] = [];
+      for (const name of viewportNames) {
+        const vp = VIEWPORT_MAP[name];
+        if (!vp) {
+          console.error(
+            `Error: Unknown viewport "${name}". Valid: ${Object.keys(VIEWPORT_MAP).join(", ")}`
+          );
+          process.exit(1);
+        }
+        viewports.push(vp);
+      }
+
+      // Parse themes
+      const validThemes = ["light", "dark"];
+      const themes = options.themes.split(",").map((t) => t.trim()) as ThemeName[];
+      for (const t of themes) {
+        if (!validThemes.includes(t)) {
+          console.error(`Error: Unknown theme "${t}". Valid: light, dark`);
+          process.exit(1);
+        }
+      }
+
+      try {
+        // Try loading config from athena.config.json
+        let fileConfig: Partial<ScreenshotEngineConfig> = {};
+        try {
+          fileConfig = await loadScreenshotConfig(projectDir);
+        } catch {
+          // No config file, that is fine
+        }
+
+        const config: ScreenshotEngineConfig = {
+          ...fileConfig,
+          projectDir,
+          outputDir,
+          viewports,
+          themes,
+          fullPage: options.fullPage,
+          timeout: parseInt(options.timeout, 10),
+        };
+
+        if (options.url) {
+          config.baseUrl = options.url;
+        }
+        if (options.devCommand) {
+          config.devServerCommand = options.devCommand;
+        }
+        if (options.devPort) {
+          config.devServerPort = parseInt(options.devPort, 10);
+        }
+
+        const result = await runScreenshotEngine(config);
+
+        console.log("\nScreenshot capture complete!");
+        console.log(`  Routes: ${result.totalRoutes}`);
+        console.log(`  Screenshots: ${result.totalScreenshots}`);
+        if (result.failures > 0) {
+          console.log(`  Failures: ${result.failures}`);
+        }
+        console.log(`  Duration: ${(result.duration / 1000).toFixed(1)}s`);
+        console.log(`  Output: ${outputDir}`);
+
+        if (result.failures > 0) {
+          process.exit(1);
+        }
+      } catch (err) {
+        console.error("Error capturing screenshots:", err);
+        process.exit(1);
+      }
+    }
+  );
+
+// --- Render HTML Command ---
+
+program
+  .command("render-html")
+  .description(
+    "Convert markdown docs to a styled HTML site with sidebar navigation, dark theme, and embedded diagrams"
+  )
+  .requiredOption("--project <path>", "Path to the project directory")
+  .option("--input <path>", "Input docs directory (default: <project>/docs)")
+  .option("--output <path>", "Output HTML directory (default: <project>/docs/html)")
+  .option("--title <title>", "Site title (default: project name)")
+  .option("--theme <theme>", "Theme: dark, light", "dark")
+  .option("--pdf", "Also generate PDF versions of each page using Playwright", false)
+  .action(
+    async (options: {
+      project: string;
+      input?: string;
+      output?: string;
+      title?: string;
+      theme: string;
+      pdf: boolean;
+    }) => {
+      const projectDir = resolve(options.project);
+
+      if (!existsSync(projectDir)) {
+        console.error(`Error: Project directory does not exist: ${projectDir}`);
+        process.exit(1);
+      }
+
+      const docsDir = options.input
+        ? resolve(options.input)
+        : join(projectDir, "docs");
+      const outputDir = options.output
+        ? resolve(options.output)
+        : join(projectDir, "docs", "html");
+
+      if (!existsSync(docsDir)) {
+        console.error(
+          `Error: Docs directory does not exist: ${docsDir}. Run "athena generate-docs" first.`
+        );
+        process.exit(1);
+      }
+
+      // Detect project name
+      let projectName = options.title || "Documentation";
+      const manifestPath = join(projectDir, "project-manifest.json");
+      if (existsSync(manifestPath)) {
+        try {
+          const raw = await readFile(manifestPath, "utf-8");
+          const manifest = JSON.parse(raw);
+          if (manifest.name) {
+            projectName = options.title || manifest.name;
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      const isDark = options.theme === "dark";
+
+      try {
+        mkdirSync(outputDir, { recursive: true });
+
+        // Find all .md files recursively
+        const mdFiles: { path: string; name: string; relativePath: string }[] = [];
+        function findMd(dir: string, prefix: string) {
+          const entries = readdirSync(dir, { withFileTypes: true });
+          for (const entry of entries) {
+            if (entry.name === "html") continue; // skip output dir
+            const full = join(dir, entry.name);
+            if (entry.isDirectory()) {
+              findMd(full, prefix ? `${prefix}/${entry.name}` : entry.name);
+            } else if (entry.name.endsWith(".md")) {
+              mdFiles.push({
+                path: full,
+                name: entry.name.replace(/\.md$/, ""),
+                relativePath: prefix ? `${prefix}/${entry.name}` : entry.name,
+              });
+            }
+          }
+        }
+        findMd(docsDir, "");
+
+        if (mdFiles.length === 0) {
+          console.error("No markdown files found in docs directory.");
+          process.exit(1);
+        }
+
+        console.log("\nAthena HTML Renderer");
+        console.log("====================");
+        console.log(`Project: ${projectName}`);
+        console.log(`Docs: ${docsDir} (${mdFiles.length} files)`);
+        console.log(`Output: ${outputDir}`);
+
+        // Find screenshot images
+        const screenshotDir = join(docsDir, "screenshots");
+        const hasScreenshots = existsSync(screenshotDir);
+
+        // Build sidebar nav
+        const navItems = mdFiles.map((f) => {
+          const slug = f.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+          const label = f.name
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+          return { slug, label, file: f };
+        });
+
+        // Theme colors
+        const bg = isDark ? "#0d1117" : "#ffffff";
+        const fg = isDark ? "#c9d1d9" : "#24292f";
+        const sidebarBg = isDark ? "#161b22" : "#f6f8fa";
+        const borderColor = isDark ? "#30363d" : "#d0d7de";
+        const linkColor = isDark ? "#58a6ff" : "#0969da";
+        const codeBg = isDark ? "#1c2128" : "#f0f3f6";
+        const activeBg = isDark ? "#1f6feb33" : "#ddf4ff";
+
+        // Convert each MD file to an HTML page
+        let pageCount = 0;
+        for (const item of navItems) {
+          const mdContent = await readFile(item.file.path, "utf-8");
+
+          // Simple markdown to HTML conversion
+          let html = mdContent
+            // Code blocks with language
+            .replace(/```(\w+)?\n([\s\S]*?)```/g, (_: string, lang: string, code: string) => {
+              const escaped = code
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+              return `<pre><code class="language-${lang || "text"}">${escaped}</code></pre>`;
+            })
+            // Inline code
+            .replace(/`([^`]+)`/g, "<code>$1</code>")
+            // Headers
+            .replace(/^#### (.+)$/gm, "<h4>$1</h4>")
+            .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+            .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+            .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+            // Bold and italic
+            .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+            .replace(/\*(.+?)\*/g, "<em>$1</em>")
+            // Links
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+            // Images
+            .replace(/!\[([^\]]*?)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:8px;margin:1em 0;">')
+            // Horizontal rules
+            .replace(/^---$/gm, "<hr>")
+            // Unordered lists
+            .replace(/^- (.+)$/gm, "<li>$1</li>")
+            // Tables (basic)
+            .replace(/^\|(.+)\|$/gm, (match: string) => {
+              const cells = match
+                .split("|")
+                .filter((c: string) => c.trim())
+                .map((c: string) => `<td>${c.trim()}</td>`)
+                .join("");
+              return `<tr>${cells}</tr>`;
+            })
+            // Wrap consecutive <li> in <ul>
+            .replace(
+              /(<li>.*<\/li>\n?)+/g,
+              (match: string) => `<ul>${match}</ul>`
+            )
+            // Wrap consecutive <tr> in <table>
+            .replace(
+              /(<tr>.*<\/tr>\n?)+/g,
+              (match: string) => `<table>${match}</table>`
+            )
+            // Paragraphs (lines that are not already HTML)
+            .replace(/^(?!<[a-z/])(\S.+)$/gm, "<p>$1</p>");
+
+          // Mermaid blocks
+          html = html.replace(
+            /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g,
+            '<div class="mermaid">$1</div>'
+          );
+
+          // Build sidebar HTML
+          const sidebar = navItems
+            .map(
+              (n) =>
+                `<a href="${n.slug}.html" class="nav-item${n.slug === item.slug ? " active" : ""}">${n.label}</a>`
+            )
+            .join("\n          ");
+
+          const pageHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${item.label} - ${projectName}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: ${bg}; color: ${fg}; display: flex; min-height: 100vh;
+    }
+    .sidebar {
+      width: 260px; background: ${sidebarBg}; border-right: 1px solid ${borderColor};
+      padding: 1rem 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto;
+    }
+    .sidebar-header {
+      padding: 1rem 1.25rem; font-size: 1.1rem; font-weight: 700;
+      border-bottom: 1px solid ${borderColor}; margin-bottom: 0.5rem;
+      color: ${linkColor};
+    }
+    .nav-item {
+      display: block; padding: 0.5rem 1.25rem; color: ${fg};
+      text-decoration: none; font-size: 0.9rem;
+      border-left: 3px solid transparent; transition: all 0.15s;
+    }
+    .nav-item:hover { background: ${activeBg}; }
+    .nav-item.active {
+      background: ${activeBg}; border-left-color: ${linkColor}; font-weight: 600;
+    }
+    .content {
+      margin-left: 260px; padding: 2rem 3rem; max-width: 900px; width: 100%;
+    }
+    h1 { font-size: 2rem; margin: 0.5em 0; border-bottom: 1px solid ${borderColor}; padding-bottom: 0.3em; }
+    h2 { font-size: 1.5rem; margin: 1.5em 0 0.5em; border-bottom: 1px solid ${borderColor}; padding-bottom: 0.2em; }
+    h3 { font-size: 1.25rem; margin: 1.2em 0 0.4em; }
+    h4 { font-size: 1.1rem; margin: 1em 0 0.3em; }
+    p { margin: 0.6em 0; line-height: 1.6; }
+    a { color: ${linkColor}; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code {
+      background: ${codeBg}; padding: 0.2em 0.4em; border-radius: 4px;
+      font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.85em;
+    }
+    pre {
+      background: ${codeBg}; padding: 1em; border-radius: 8px;
+      overflow-x: auto; margin: 1em 0; border: 1px solid ${borderColor};
+    }
+    pre code { background: none; padding: 0; }
+    table {
+      border-collapse: collapse; width: 100%; margin: 1em 0;
+    }
+    td, th {
+      border: 1px solid ${borderColor}; padding: 0.5em 0.75em; text-align: left;
+    }
+    tr:nth-child(even) { background: ${codeBg}; }
+    ul { padding-left: 1.5em; margin: 0.5em 0; }
+    li { margin: 0.3em 0; line-height: 1.5; }
+    hr { border: none; border-top: 1px solid ${borderColor}; margin: 2em 0; }
+    img { border: 1px solid ${borderColor}; }
+    .mermaid { margin: 1.5em 0; }
+    .footer {
+      margin-top: 4em; padding-top: 1em; border-top: 1px solid ${borderColor};
+      font-size: 0.8em; opacity: 0.6;
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; padding: 1rem; }
+    }
+  </style>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, theme: "${isDark ? "dark" : "default"}" });
+  </script>
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-header">${projectName}</div>
+    ${sidebar}
+  </nav>
+  <main class="content">
+    ${html}
+    <div class="footer">
+      Generated by Athena &mdash; &copy; ${new Date().getFullYear()} TheForge, LLC
+    </div>
+  </main>
+</body>
+</html>`;
+
+          const outPath = join(outputDir, `${item.slug}.html`);
+          await writeFile(outPath, pageHtml, "utf-8");
+          pageCount++;
+        }
+
+        // Copy screenshots if they exist
+        if (hasScreenshots) {
+          const { execSync } = await import("node:child_process");
+          const destScreenshots = join(outputDir, "screenshots");
+          mkdirSync(destScreenshots, { recursive: true });
+          execSync(`cp -r "${screenshotDir}/"* "${destScreenshots}/"`, {
+            stdio: "ignore",
+          });
+          console.log(`  Copied screenshots to ${destScreenshots}`);
+        }
+
+        // Copy diagram images if they exist
+        const diagramDir = join(docsDir, "diagrams");
+        if (existsSync(diagramDir)) {
+          const { execSync } = await import("node:child_process");
+          const destDiagrams = join(outputDir, "diagrams");
+          mkdirSync(destDiagrams, { recursive: true });
+          execSync(`cp -r "${diagramDir}/"* "${destDiagrams}/"`, {
+            stdio: "ignore",
+          });
+          console.log(`  Copied diagrams to ${destDiagrams}`);
+        }
+
+        // Create index.html redirect
+        const indexHtml = `<!DOCTYPE html>
+<html><head><meta http-equiv="refresh" content="0;url=${navItems[0].slug}.html"></head></html>`;
+        await writeFile(join(outputDir, "index.html"), indexHtml, "utf-8");
+
+        // Generate PDFs if requested
+        if (options.pdf) {
+          console.log("\nGenerating PDFs...");
+          try {
+            const { chromium } = await import("playwright");
+            const browser = await chromium.launch();
+            const pdfDir = join(outputDir, "pdf");
+            mkdirSync(pdfDir, { recursive: true });
+
+            let pdfCount = 0;
+            for (const item of navItems) {
+              const htmlPath = join(outputDir, `${item.slug}.html`);
+              const pdfPath = join(pdfDir, `${item.slug}.pdf`);
+              const page = await browser.newPage();
+              await page.goto(`file://${htmlPath}`, { waitUntil: "networkidle" });
+
+              // Hide sidebar for PDF, expand content
+              await page.addStyleTag({
+                content: `
+                  .sidebar { display: none !important; }
+                  .content { margin-left: 0 !important; max-width: 100% !important; padding: 1.5rem !important; }
+                  body { display: block !important; }
+                `,
+              });
+
+              await page.pdf({
+                path: pdfPath,
+                format: "A4",
+                printBackground: true,
+                margin: { top: "1cm", bottom: "1cm", left: "1.5cm", right: "1.5cm" },
+                displayHeaderFooter: true,
+                headerTemplate: `<div style="font-size:9px;width:100%;text-align:center;color:#666;">${item.label} - ${projectName}</div>`,
+                footerTemplate: '<div style="font-size:9px;width:100%;text-align:center;color:#666;">Page <span class="pageNumber"></span> of <span class="totalPages"></span> | Generated by Athena</div>',
+              });
+              await page.close();
+              pdfCount++;
+            }
+
+            await browser.close();
+            console.log(`  PDFs: ${pdfCount} files in ${pdfDir}`);
+          } catch (pdfErr) {
+            if (String(pdfErr).includes("Cannot find module")) {
+              console.error("  PDF generation requires Playwright: npm install playwright");
+            } else {
+              console.error("  PDF generation failed:", pdfErr);
+            }
+          }
+        }
+
+        console.log("\nHTML site generated!");
+        console.log(`  Pages: ${pageCount}`);
+        console.log(`  Index: ${join(outputDir, "index.html")}`);
+        if (options.pdf) {
+          console.log(`  PDFs: ${join(outputDir, "pdf")}`);
+        }
+        console.log(`\n  Open in browser: file://${outputDir}/index.html`);
+      } catch (err) {
+        console.error("Error rendering HTML:", err);
+        process.exit(1);
+      }
+    }
+  );
+
 
 program.parse();

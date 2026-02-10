@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Project scanner and manifest generator for AI-assisted development",
   "author": "TheForge, LLC",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "copyright": "2026, TheForge, LLC",
   "type": "module",
   "bin": {

@@ -1,0 +1,20 @@
+graph TD
+  src["src"]
+  src_scanners["src/scanners"]
+  src_generators["src/generators"]
+  src_changelog["src/changelog"]
+  src_screenshots["src/screenshots"]
+  src_diagrams["src/diagrams"]
+  src_utils["src/utils"]
+  src --> src_scanners
+  src --> src_generators
+  src --> src_changelog
+  src --> src_screenshots
+  src --> src_diagrams
+  src_utils --> src
+  src_screenshots --> src
+  src_scanners --> src
+  src_generators --> src_utils
+  src_generators --> src
+  src_diagrams --> src
+  src_changelog --> src

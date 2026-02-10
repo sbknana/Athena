@@ -1,0 +1,21 @@
+graph LR
+  athena["athena"]
+  anthropic_ai_sdk["@anthropic-ai/sdk"]
+  athena --> anthropic_ai_sdk
+  commander["commander"]
+  athena --> commander
+  diff["diff"]
+  athena --> diff
+  glob["glob"]
+  athena --> glob
+  playwright["playwright"]
+  athena --> playwright
+  dev_types_diff["@types/diff"]:::devDep
+  athena -.-> dev_types_diff
+  dev_types_node["@types/node"]:::devDep
+  athena -.-> dev_types_node
+  dev_tsx["tsx"]:::devDep
+  athena -.-> dev_tsx
+  dev_typescript["typescript"]:::devDep
+  athena -.-> dev_typescript
+  classDef devDep fill:#f9f,stroke:#333,stroke-dasharray: 5 5

@@ -1222,10 +1222,10 @@ program
             // Bold and italic
             .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
             .replace(/\*(.+?)\*/g, "<em>$1</em>")
+            // Images (MUST run before links to avoid ![...] being caught by link regex)
+            .replace(/!\[([^\]]*?)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:8px;margin:1em 0;">')
             // Links
             .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-            // Images
-            .replace(/!\[([^\]]*?)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:8px;margin:1em 0;">')
             // Horizontal rules
             .replace(/^---$/gm, "<hr>")
             // Unordered lists

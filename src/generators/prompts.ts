@@ -2,46 +2,50 @@
 // Copyright 2026, TheForge, LLC
 
 export const SYSTEM_PROMPTS = {
-  readme: `You are a technical writer generating a README.md for a software project.
+  readme: `You are writing a README.md that a HUMAN USER will read first. Not a developer — a person who found this project and wants to know what it does and how to use it.
+
 You will receive a project manifest with source code analysis and optional screenshot paths.
 
-Generate a professional README.md with these sections (in order):
-1. Project title (H1) with a one-line tagline
-2. Hero screenshot (if provided) — embed inline
-3. Description — 2-3 paragraphs explaining what the project does and why
-4. Features — bulleted list of key features
-5. Quick Start — minimal steps to get running (install, configure, run)
-6. Usage — common usage examples with code blocks
-7. Screenshots Gallery — all provided screenshots with descriptions
-8. Tech Stack — frameworks, languages, key dependencies
-9. Configuration — environment variables, config files
-10. Contributing — brief note linking to CONTRIBUTING.md
-11. License
+Generate a README.md with these sections (in this exact order):
 
-Rules:
+1. **Project title** (H1) with a clear one-line description of what it does (not how it works)
+2. **Hero screenshot** — if screenshots are provided, show the BEST one (dashboard, main UI) right at the top, full width
+3. **What is this?** — 2-3 sentences in plain English. What problem does it solve? Who is it for? No jargon.
+4. **Screenshots** — show ALL provided screenshots with short captions explaining what the user is seeing. This section should be prominent, not buried.
+5. **Quick Start** — numbered steps to get running. Keep it to 5 steps or fewer. Include actual commands. This is the MOST IMPORTANT section for new users.
+6. **How to Use** — walk through the main features from a USER perspective. "Click the Tasks tab to see...", "The dashboard shows...", etc. Reference screenshots.
+7. **Features** — bulleted list, written as benefits not technical specs ("See all your tasks at a glance" not "RESTful API with SSE")
+8. **Installation** — detailed setup for people who want to install from scratch. Prerequisites, env vars, commands.
+9. **Configuration** — only if there are meaningful config options
+10. **Tech Stack** — brief, for developers who want to contribute
+11. **License**
+
+CRITICAL RULES:
+- Write for HUMANS, not developers. Plain English. Short sentences.
+- Screenshots are the STAR of the documentation — show them prominently with descriptions
+- Quick Start comes BEFORE technical details
+- NEVER start with architecture or API details — those belong in separate docs
 - Use GitHub-flavored Markdown
-- Be concise but informative
-- Code blocks must specify the language
-- Screenshots use relative paths from the docs directory
-- Do NOT invent features not present in the manifest
-- Do NOT include a Table of Contents (it will be auto-generated)`,
+- Screenshots use relative paths: screenshots/filename.png
+- Do NOT invent features not in the manifest
+- If the project has a web UI, the docs should feel like a product page, not a code reference`,
 
-  architecture: `You are a software architect generating an ARCHITECTURE.md document.
+  architecture: `You are writing an ARCHITECTURE.md that helps developers (and curious users) understand how the project works under the hood.
+
 You will receive a project manifest with source code analysis.
 
 Generate ARCHITECTURE.md with these sections:
-1. Overview — high-level architecture description (2-3 paragraphs)
-2. System Architecture — Mermaid flowchart showing major components and data flow
-3. Component Tree — Mermaid graph of component/module hierarchy
-4. Data Flow — Mermaid sequence diagram showing request/response flow
-5. Database Schema — Mermaid ER diagram (if DB models detected, otherwise skip)
-6. Directory Structure — tree view of important directories
-7. Design Decisions — key architectural choices and rationale
-8. Dependencies — why major dependencies were chosen
+1. **How It Works** — explain the system in plain English first. "When you open the dashboard, here's what happens..." Walk through the user experience and connect it to the code.
+2. **System Overview** — Mermaid flowchart showing major components and how they connect. Keep it simple — max 10 nodes.
+3. **Data Flow** — Mermaid sequence diagram showing a typical request from user action to response
+4. **Database** — Mermaid ER diagram (if DB models detected, otherwise skip)
+5. **Project Structure** — tree view of important directories with one-line descriptions
+6. **Key Design Decisions** — why things were built this way (brief)
 
 Rules:
+- START with "how it works" in plain English before diving into diagrams
 - All diagrams MUST use valid Mermaid syntax wrapped in \`\`\`mermaid code blocks
-- Flowcharts use graph TD (top-down) or graph LR (left-right)
+- Flowcharts use graph TD or graph LR
 - Sequence diagrams use sequenceDiagram
 - ER diagrams use erDiagram
 - Keep diagrams focused — max 15 nodes per diagram
@@ -71,28 +75,26 @@ Rules:
 - Mark inferred information with "(inferred)" so users know to verify
 - If no API endpoints detected, state that clearly and suggest how to add them`,
 
-  deployment: `You are a DevOps engineer generating DEPLOYMENT.md documentation.
+  deployment: `You are writing a DEPLOYMENT.md that gets someone from zero to running as fast as possible.
+
 You will receive a project manifest with framework, language, scripts, and dependency information.
 
 Generate DEPLOYMENT.md with these sections:
-1. Prerequisites — required runtime versions, tools, accounts
-2. Environment Variables — all detected env vars with descriptions
-3. Local Development — step-by-step local setup
-4. Build — build commands and output
-5. Deployment Options — suggest appropriate platforms based on framework:
-   - Vercel/Netlify for Next.js/React
-   - Railway/Render for Express/API servers
-   - Docker for general deployment
-6. Docker — Dockerfile example if applicable
-7. CI/CD — basic GitHub Actions workflow example
-8. Monitoring — suggested monitoring approach
+1. **TL;DR** — the absolute minimum commands to get running (3-5 lines, copy-paste ready)
+2. **Prerequisites** — what you need installed, with version numbers and install links
+3. **Step-by-Step Setup** — numbered walkthrough, every step has a command
+4. **Environment Variables** — table format: name, description, example value, required?
+5. **Running in Production** — how to run it for real (systemd, Docker, PM2, etc.)
+6. **Docker** — Dockerfile example if applicable
+7. **Troubleshooting** — common issues and fixes (port in use, missing deps, etc.)
 
 Rules:
-- Tailor deployment advice to the specific framework
+- START with the TL;DR — people want to run it NOW
+- Every section should have copy-pasteable commands
+- Use tables for env vars, not paragraphs
 - Include actual commands from the project's scripts
 - Mark suggestions vs facts clearly
-- Include a basic Dockerfile if none exists
-- Keep it actionable — every section should have copy-pasteable commands`,
+- Keep it actionable and scannable — use bullet points and code blocks liberally`,
 
   contributing: `You are a community manager generating CONTRIBUTING.md for an open-source project.
 You will receive a project manifest with language, framework, and tooling information.

@@ -181,13 +181,20 @@ export async function loadManifest(
 export async function loadScreenshotManifest(
   projectDir: string
 ): Promise<ScreenshotManifest | undefined> {
-  const manifestPath = join(projectDir, "docs", "screenshot-manifest.json");
-  try {
-    const raw = await readFile(manifestPath, "utf-8");
-    return JSON.parse(raw) as ScreenshotManifest;
-  } catch {
-    return undefined;
+  // Check both locations: docs/ and docs/screenshots/
+  const paths = [
+    join(projectDir, "docs", "screenshot-manifest.json"),
+    join(projectDir, "docs", "screenshots", "screenshot-manifest.json"),
+  ];
+  for (const manifestPath of paths) {
+    try {
+      const raw = await readFile(manifestPath, "utf-8");
+      return JSON.parse(raw) as ScreenshotManifest;
+    } catch {
+      continue;
+    }
   }
+  return undefined;
 }
 
 export function printDiffSummary(diffs: DiffResult[]): void {

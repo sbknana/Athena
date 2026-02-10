@@ -1,0 +1,30 @@
+{
+  "name": "athena",
+  "version": "1.0.0",
+  "description": "Project scanner and manifest generator for AI-assisted development",
+  "author": "TheForge, LLC",
+  "license": "UNLICENSED",
+  "copyright": "2026, TheForge, LLC",
+  "type": "module",
+  "bin": {
+    "athena": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "dev": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "commander": "^13.0.0",
+    "diff": "^7.0.0",
+    "glob": "^11.0.0",
+    "playwright": "^1.58.2"
+  },
+  "devDependencies": {
+    "@types/diff": "^7.0.2",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0"
+  }
+}

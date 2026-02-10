@@ -242,3 +242,190 @@ export interface ScreenshotEngineResult {
   failures: number;
   duration: number;
 }
+
+// --- Athena Config Types ---
+
+export interface AthenaConfig {
+  projectName?: string;
+  description?: string;
+  devServer?: {
+    command?: string;
+    port?: number;
+    baseUrl?: string;
+  };
+  auth?: AuthConfig;
+  excludedRoutes?: string[];
+  docs?: {
+    types?: DocType[];
+    model?: ModelTier;
+    outputDir?: string;
+    diffMode?: boolean;
+    customSections?: Record<string, string>;
+  };
+  screenshots?: {
+    outputDir?: string;
+    baseUrl?: string;
+    devServerCommand?: string;
+    devServerPort?: number;
+    viewports?: ViewportName[];
+    themes?: ThemeName[];
+    routes?: RouteScreenshotConfig[];
+    timeout?: number;
+    fullPage?: boolean;
+  };
+  freshness?: {
+    include?: string[];
+    exclude?: string[];
+    trackingFile?: string;
+  };
+  schedule?: {
+    cron?: string;
+    timezone?: string;
+  };
+}
+
+// --- Freshness Tracking Types ---
+
+export interface FileHash {
+  path: string;
+  hash: string;
+  size: number;
+  mtime: string;
+}
+
+export interface FreshnessRecord {
+  generatedAt: string;
+  athenaVersion: string;
+  projectDir: string;
+  sourceHashes: FileHash[];
+  configHash?: string;
+  docsGenerated: string[];
+}
+
+export interface FreshnessCheckResult {
+  isStale: boolean;
+  changedFiles: string[];
+  newFiles: string[];
+  deletedFiles: string[];
+  lastGenerated?: string;
+  reason: string;
+}
+
+// --- Changelog Generator Types ---
+
+export type CommitCategory =
+  | "feature"
+  | "fix"
+  | "refactor"
+  | "docs"
+  | "chore"
+  | "test"
+  | "style"
+  | "perf"
+  | "ci"
+  | "breaking";
+
+export interface ParsedCommit {
+  hash: string;
+  shortHash: string;
+  subject: string;
+  body: string;
+  author: string;
+  date: string;
+  category: CommitCategory;
+  scope?: string;
+  breaking: boolean;
+  prNumber?: number;
+  issueNumbers: number[];
+}
+
+export interface VersionSection {
+  version: string;
+  date: string;
+  tag?: string;
+  commits: ParsedCommit[];
+  features: ParsedCommit[];
+  fixes: ParsedCommit[];
+  refactors: ParsedCommit[];
+  docs: ParsedCommit[];
+  chores: ParsedCommit[];
+  tests: ParsedCommit[];
+  styles: ParsedCommit[];
+  perfs: ParsedCommit[];
+  ci: ParsedCommit[];
+  breaking: ParsedCommit[];
+}
+
+export interface ChangelogConfig {
+  projectDir: string;
+  outputDir?: string;
+  includeHistory?: boolean;
+  githubUrl?: string;
+  fromTag?: string;
+  toRef?: string;
+}
+
+export interface ChangelogResult {
+  changelogPath: string;
+  historyPath?: string;
+  versions: VersionSection[];
+  totalCommits: number;
+  githubUrl?: string;
+}
+
+// --- CLI Screenshot Types ---
+
+export interface CLICommandInfo {
+  name: string;
+  command: string;
+  source: "package.json:scripts" | "package.json:bin" | "athena.config.json" | "detected";
+  description?: string;
+}
+
+export interface CLIRunConfig {
+  command: string;
+  args: string[];
+  description: string;
+  stdin?: string;
+  timeout?: number;
+}
+
+export interface CLIRunResult {
+  command: string;
+  args: string[];
+  exitCode: number | null;
+  stdout: string;
+  stderr: string;
+  combined: string;
+  timedOut: boolean;
+  duration: number;
+}
+
+export interface CLIScreenshotResult {
+  command: string;
+  args: string[];
+  filePath: string;
+  success: boolean;
+  error?: string;
+  timestamp: string;
+}
+
+export interface CLIScreenshotConfig {
+  projectDir: string;
+  outputDir?: string;
+  commands?: CLIRunConfig[];
+  timeout?: number;
+  theme?: "dark" | "light";
+  fontFamily?: string;
+  fontSize?: number;
+  width?: number;
+  padding?: number;
+}
+
+export interface CLIScreenshotEngineResult {
+  results: CLIScreenshotResult[];
+  totalCommands: number;
+  totalScreenshots: number;
+  failures: number;
+  duration: number;
+}

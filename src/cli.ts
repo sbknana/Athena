@@ -13,6 +13,14 @@ import {
   loadScreenshotManifest,
   printDiffSummary,
 } from "./generators/index.js";
+import { generateChangelog } from "./changelog/index.js";
+import { loadConfig, initConfig, hasConfig } from "./config.js";
+import {
+  checkFreshness,
+  printFreshnessResult,
+  hashSourceFiles,
+  saveFreshnessRecord,
+} from "./freshness.js";
 import type { DocType, ModelTier } from "./types.js";
 
 const program = new Command();
@@ -202,6 +210,75 @@ program
         } else {
           console.error("Error generating docs:", err);
         }
+        process.exit(1);
+      }
+    }
+  );
+
+program
+  .command("changelog")
+  .description("Generate CHANGELOG.md (and optionally HISTORY.md) from git history")
+  .requiredOption("--project <path>", "Path to the project directory (must be a git repo)")
+  .option("--output <path>", "Output directory (default: project root)")
+  .option("--history", "Also generate a detailed HISTORY.md", false)
+  .option("--github-url <url>", "GitHub repo URL for linking PRs/issues (auto-detected from remote)")
+  .option("--from <tag>", "Start from this tag (default: all history)")
+  .option("--to <ref>", "End at this ref (default: HEAD)")
+  .action(
+    async (options: {
+      project: string;
+      output?: string;
+      history: boolean;
+      githubUrl?: string;
+      from?: string;
+      to?: string;
+    }) => {
+      const projectDir = resolve(options.project);
+
+      if (!existsSync(projectDir)) {
+        console.error(`Error: Project directory does not exist: ${projectDir}`);
+        process.exit(1);
+      }
+
+      if (!existsSync(join(projectDir, ".git"))) {
+        console.error(`Error: Not a git repository: ${projectDir}`);
+        process.exit(1);
+      }
+
+      try {
+        console.log(`\nGenerating changelog for: ${projectDir}`);
+        const result = await generateChangelog({
+          projectDir,
+          outputDir: options.output,
+          includeHistory: options.history,
+          githubUrl: options.githubUrl,
+          fromTag: options.from,
+          toRef: options.to,
+        });
+
+        console.log(`\nChangelog generation complete!`);
+        console.log(`  Commits: ${result.totalCommits}`);
+        console.log(`  Versions: ${result.versions.length}`);
+        console.log(`  CHANGELOG: ${result.changelogPath}`);
+        if (result.historyPath) {
+          console.log(`  HISTORY: ${result.historyPath}`);
+        }
+        if (result.githubUrl) {
+          console.log(`  GitHub: ${result.githubUrl}`);
+        }
+
+        // Print version summary
+        for (const v of result.versions) {
+          const counts = [
+            v.features.length && `${v.features.length} features`,
+            v.fixes.length && `${v.fixes.length} fixes`,
+            v.refactors.length && `${v.refactors.length} refactors`,
+            v.breaking.length && `${v.breaking.length} breaking`,
+          ].filter(Boolean);
+          console.log(`  ${v.version}: ${v.commits.length} commits (${counts.join(", ") || "misc"})`);
+        }
+      } catch (err) {
+        console.error("Error generating changelog:", err);
         process.exit(1);
       }
     }

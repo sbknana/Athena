@@ -1,5 +1,5 @@
 // Athena - Route Discovery for Screenshot Engine
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -38,11 +38,30 @@ function routeInfoToScreenshotConfigs(
     (r) => !r.method || r.method.toUpperCase() === "GET"
   );
 
-  return pageRoutes.map((route) => ({
-    route: route.path,
-    description: `Page from ${basename(route.file)}`,
-    category: categorizeRoute(route.path),
-  }));
+  const configs: RouteScreenshotConfig[] = [];
+  for (const route of pageRoutes) {
+    let cleanPath = route.path;
+
+    // Strip Next.js route groups — (groupName) segments don't appear in URLs
+    cleanPath = cleanPath.replace(/\/\([^)]+\)/g, "");
+
+    // Convert page.tsx references to proper route (e.g., /page.tsx → /)
+    cleanPath = cleanPath.replace(/\/page\.(tsx|jsx|ts|js)$/, "") || "/";
+
+    // Skip dynamic routes — can't screenshot [id] pages
+    if (cleanPath.includes("[")) continue;
+
+    // Normalize
+    cleanPath = cleanPath || "/";
+
+    configs.push({
+      route: cleanPath,
+      description: `Page from ${basename(route.file)}`,
+      category: categorizeRoute(cleanPath),
+    });
+  }
+
+  return configs;
 }
 
 function categorizeRoute(
@@ -109,6 +128,10 @@ async function discoverNextJsRoutes(
 
       // Filter out dynamic segments for screenshots (can't screenshot [id])
       if (routePath.includes("[")) continue;
+
+      // Strip Next.js route groups — (groupName) segments are organizational only
+      // e.g., /(dashboard)/settings → /settings, /(auth)/signin → /signin
+      routePath = routePath.replace(/\/\([^)]+\)/g, "");
 
       // Clean up route path
       if (routePath === "/.") routePath = "/";

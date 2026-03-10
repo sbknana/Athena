@@ -1,5 +1,5 @@
 // Athena - Auth Handler for Screenshot Engine
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -85,34 +85,41 @@ export async function performLogin(
     await passwordField.waitFor({ state: "visible", timeout: 5_000 });
     await passwordField.fill(auth.password);
 
-    // Submit
+    // Submit and wait for URL to change (handles SPA logins that use fetch + redirect)
     const submitButton = page.locator(auth.submitSelector).first();
     await submitButton.click();
 
-    // Wait for navigation
-    await page.waitForLoadState("networkidle", { timeout: 10_000 });
-
-    // Check success indicator if provided
-    if (auth.successIndicator) {
-      try {
-        await page.waitForSelector(auth.successIndicator, { timeout: 5_000 });
-        console.log("  Login successful (indicator found)");
-        return true;
-      } catch {
-        console.log("  Login may have failed (indicator not found)");
-        return false;
-      }
-    }
-
-    // Check we navigated away from login page
-    const currentUrl = page.url();
-    if (currentUrl !== loginUrl) {
+    // Wait for either: URL change, success indicator, or networkidle (whichever first)
+    const loginPath = new URL(loginUrl).pathname;
+    try {
+      await page.waitForURL((url) => new URL(url).pathname !== loginPath, {
+        timeout: 15_000,
+      });
       console.log("  Login successful (navigated away from login page)");
+      await page.waitForLoadState("networkidle", { timeout: 10_000 });
       return true;
-    }
+    } catch {
+      // URL didn't change — try checking for success indicator
+      if (auth.successIndicator) {
+        try {
+          await page.waitForSelector(auth.successIndicator, { timeout: 3_000 });
+          console.log("  Login successful (indicator found)");
+          return true;
+        } catch {
+          // fall through
+        }
+      }
 
-    console.log("  Login result uncertain (still on login page)");
-    return false;
+      // Final check — maybe the URL changed after our timeout
+      const currentUrl = page.url();
+      if (new URL(currentUrl).pathname !== loginPath) {
+        console.log("  Login successful (URL changed on recheck)");
+        return true;
+      }
+
+      console.log("  Login failed (still on login page after 15s)");
+      return false;
+    }
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.log(`  Login failed: ${msg}`);

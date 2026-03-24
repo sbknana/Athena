@@ -2,9 +2,9 @@
   "name": "athena",
   "version": "1.0.0",
   "description": "Project scanner and manifest generator for AI-assisted development",
-  "author": "TheForge, LLC",
+  "author": "Forgeborn",
   "license": "MIT",
-  "copyright": "2026, TheForge, LLC",
+  "copyright": "2026, Forgeborn",
   "type": "module",
   "bin": {
     "athena": "./dist/cli.js"

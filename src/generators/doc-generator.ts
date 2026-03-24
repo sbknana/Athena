@@ -4,7 +4,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import { ClaudeClient } from "./claude-client.js";
-import { SYSTEM_PROMPTS, buildUserPrompt } from "./prompts.js";
+import { SYSTEM_PROMPTS, buildSystemPrompt, buildUserPrompt } from "./prompts.js";
 import {
   buildSourceSummary,
   formatScreenshotEmbed,
@@ -15,6 +15,7 @@ import {
 import { diffWithExisting, mergeBySection } from "../utils/diff.js";
 import type {
   DocGeneratorConfig,
+  DocsConfig,
   DocType,
   GeneratedDoc,
   DiffResult,
@@ -44,6 +45,12 @@ export class DocGenerator {
     const sourceSummary = buildSourceSummary(manifest);
     const screenshotSection = this.buildScreenshotSection();
 
+    // Load docs-config.json if present in project root or passed via config
+    const docsConfig = this.config.docsConfig ?? await loadDocsConfig(this.config.projectDir);
+    if (docsConfig) {
+      console.log(`  Using docs-config.json (project: ${docsConfig.project_name})`);
+    }
+
     await mkdir(this.config.outputDir, { recursive: true });
 
     const docs: GeneratedDoc[] = [];
@@ -56,7 +63,8 @@ export class DocGenerator {
       const doc = await this.generateSingleDoc(
         docType,
         sourceSummary,
-        screenshotSection
+        screenshotSection,
+        docsConfig
       );
       docs.push(doc);
     }
@@ -138,10 +146,11 @@ export class DocGenerator {
   private async generateSingleDoc(
     docType: DocType,
     sourceSummary: string,
-    screenshotSection: string
+    screenshotSection: string,
+    docsConfig?: DocsConfig
   ): Promise<GeneratedDoc> {
-    const systemPrompt = SYSTEM_PROMPTS[docType];
-    const userPrompt = buildUserPrompt(sourceSummary, screenshotSection, docType);
+    const systemPrompt = buildSystemPrompt(docType, docsConfig);
+    const userPrompt = buildUserPrompt(sourceSummary, screenshotSection, docType, docsConfig);
 
     const content = await this.client.generate(systemPrompt, userPrompt);
     const sections = parseMarkdownSections(content);
@@ -195,6 +204,18 @@ export async function loadScreenshotManifest(
     }
   }
   return undefined;
+}
+
+export async function loadDocsConfig(
+  projectDir: string
+): Promise<DocsConfig | undefined> {
+  const configPath = join(projectDir, "docs-config.json");
+  try {
+    const raw = await readFile(configPath, "utf-8");
+    return JSON.parse(raw) as DocsConfig;
+  } catch {
+    return undefined;
+  }
 }
 
 export function printDiffSummary(diffs: DiffResult[]): void {

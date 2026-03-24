@@ -1,7 +1,9 @@
 // Athena - System Prompts for Documentation Generation
 // Copyright 2026, TheForge, LLC
 
-export const SYSTEM_PROMPTS = {
+import type { DocsConfig } from "../types.js";
+
+export const SYSTEM_PROMPTS: Record<string, string> = {
   readme: `You are writing a README.md that a HUMAN USER will read first. Not a developer — a person who found this project and wants to know what it does and how to use it.
 
 You will receive a project manifest with source code analysis and optional screenshot paths.
@@ -116,15 +118,76 @@ Rules:
 - Adapt to the project's language/framework conventions`,
 };
 
+/**
+ * Build the system prompt for a given doc type, optionally enriched with
+ * editorial guidelines from docs-config.json.
+ */
+export function buildSystemPrompt(
+  docType: string,
+  docsConfig?: DocsConfig
+): string {
+  const basePrompt = SYSTEM_PROMPTS[docType] ?? SYSTEM_PROMPTS["readme"];
+
+  if (!docsConfig?.style_guide) {
+    return basePrompt;
+  }
+
+  const { style_guide } = docsConfig;
+  const sections: string[] = [basePrompt];
+
+  if (style_guide.tone) {
+    sections.push(`\nTone: ${style_guide.tone}`);
+  }
+
+  if (style_guide.rules.length > 0) {
+    sections.push(
+      "\nFollow these editorial guidelines:\n" +
+        style_guide.rules.map((rule) => `- ${rule}`).join("\n")
+    );
+  }
+
+  if (style_guide.core_strengths.length > 0) {
+    sections.push(
+      "\nHighlight these core strengths:\n" +
+        style_guide.core_strengths.map((s) => `- ${s}`).join("\n")
+    );
+  }
+
+  if (style_guide.known_limitations.length > 0) {
+    sections.push(
+      "\nInclude these known limitations honestly:\n" +
+        style_guide.known_limitations.map((l) => `- ${l}`).join("\n")
+    );
+  }
+
+  return sections.join("\n");
+}
+
 export function buildUserPrompt(
   sourceSummary: string,
   screenshotSection: string,
-  docType: string
+  docType: string,
+  docsConfig?: DocsConfig
 ): string {
   let prompt = `Here is the project analysis:\n\n${sourceSummary}`;
 
   if (screenshotSection) {
     prompt += `\n\nAvailable screenshots:\n${screenshotSection}`;
+  }
+
+  if (docsConfig) {
+    prompt += `\n\nProject name: ${docsConfig.project_name}`;
+    if (docsConfig.tagline) {
+      prompt += `\nTagline: ${docsConfig.tagline}`;
+    }
+    if (docsConfig.architecture) {
+      const arch = docsConfig.architecture;
+      prompt += `\n\nArchitecture info:`;
+      prompt += `\n- Package: ${arch.package}`;
+      prompt += `\n- Modules: ${String(arch.modules)}`;
+      prompt += `\n- Tests: ${arch.tests}`;
+      prompt += `\n- Dependencies: ${arch.dependencies}`;
+    }
   }
 
   prompt += `\n\nGenerate the ${docType} documentation now. Output ONLY the markdown content, no surrounding explanation.`;

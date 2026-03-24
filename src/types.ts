@@ -130,6 +130,27 @@ export interface ScreenshotManifest {
   capturedAt: string;
 }
 
+export interface DocsConfigStyleGuide {
+  tone: string;
+  rules: string[];
+  core_strengths: string[];
+  known_limitations: string[];
+}
+
+export interface DocsConfigArchitecture {
+  package: string;
+  modules: number;
+  tests: string;
+  dependencies: string;
+}
+
+export interface DocsConfig {
+  project_name: string;
+  tagline: string;
+  style_guide: DocsConfigStyleGuide;
+  architecture: DocsConfigArchitecture;
+}
+
 export interface DocGeneratorConfig {
   model: ModelTier;
   apiKey?: string;
@@ -137,6 +158,7 @@ export interface DocGeneratorConfig {
   projectDir: string;
   docs: DocType[];
   screenshotManifest?: ScreenshotManifest;
+  docsConfig?: DocsConfig;
   diffMode: boolean;
 }
 

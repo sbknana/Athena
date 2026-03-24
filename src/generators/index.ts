@@ -6,6 +6,7 @@ export {
   DocGenerator,
   loadManifest,
   loadScreenshotManifest,
+  loadDocsConfig,
   printDiffSummary,
 } from "./doc-generator.js";
-export { SYSTEM_PROMPTS, buildUserPrompt } from "./prompts.js";
+export { SYSTEM_PROMPTS, buildSystemPrompt, buildUserPrompt } from "./prompts.js";

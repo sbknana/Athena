@@ -1,5 +1,5 @@
 // Athena - Project Scanner Types
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 export type Framework =
   | "nextjs"

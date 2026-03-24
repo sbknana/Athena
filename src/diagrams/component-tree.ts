@@ -1,5 +1,5 @@
 // Athena - Component Tree Diagram Generator
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { readFile } from "node:fs/promises";
 import { relative, basename, dirname } from "node:path";

@@ -1,5 +1,5 @@
 // Athena - CLI Command Runner
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { spawn } from "node:child_process";
 import type { CLICommandInfo, CLIRunConfig, CLIRunResult } from "../types.js";

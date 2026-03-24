@@ -1,5 +1,5 @@
 // Athena - Doc Freshness Tracking
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { createHash } from "node:crypto";
 import { readFile, writeFile, stat } from "node:fs/promises";

@@ -1,5 +1,5 @@
 // Athena - API Flow Sequence Diagram Generator
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { readFile } from "node:fs/promises";
 import { join, relative, basename } from "node:path";

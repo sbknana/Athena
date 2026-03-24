@@ -1,5 +1,5 @@
 // Athena - Documentation Helper Utilities
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import type { DocSection, ScreenshotInfo, ProjectManifest } from "../types.js";
 

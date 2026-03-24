@@ -1,5 +1,5 @@
 // Athena - Screenshot Capturer
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { mkdir } from "node:fs/promises";
 import { join, dirname } from "node:path";

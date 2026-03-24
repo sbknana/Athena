@@ -1,5 +1,5 @@
 // Athena - Documentation Diffing
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { createTwoFilesPatch } from "diff";
 import { readFile } from "node:fs/promises";

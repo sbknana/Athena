@@ -1,5 +1,5 @@
 // Athena - Diagrams Module Index
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 export { DiagramGenerator } from "./diagram-generator.js";
 export {

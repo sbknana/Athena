@@ -1,5 +1,5 @@
 // Athena - Claude API Client
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import Anthropic from "@anthropic-ai/sdk";
 import type { ModelTier } from "../types.js";

@@ -1,5 +1,5 @@
 // Athena - Git Log Parser
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";

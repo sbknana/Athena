@@ -1,5 +1,5 @@
 // Athena - AST-Lite Parser
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { readFile } from "node:fs/promises";
 import { relative } from "node:path";

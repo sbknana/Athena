@@ -1,5 +1,5 @@
 // Athena - Config File Loader
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";

@@ -1,5 +1,5 @@
 // Athena - Project Scanner
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { basename } from "node:path";
 import { detectFramework } from "./scanners/framework-detector.js";

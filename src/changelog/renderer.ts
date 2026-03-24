@@ -1,5 +1,5 @@
 // Athena - Changelog Renderer
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import type { ParsedCommit, VersionSection } from "../types.js";
 

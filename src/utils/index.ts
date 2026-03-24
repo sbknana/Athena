@@ -1,5 +1,5 @@
 // Athena - Utils Module Index
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 export {
   parseMarkdownSections,

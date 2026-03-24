@@ -1,5 +1,5 @@
 // Athena - CLI Screenshot Engine
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 //
 // Auto-captures CLI tool output as SVG images.
 // Pipeline: detect commands → run with sample args → capture ANSI → render to SVG

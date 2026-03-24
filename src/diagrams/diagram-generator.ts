@@ -1,5 +1,5 @@
 // Athena - Diagram Generator Orchestrator
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { writeFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";

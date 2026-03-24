@@ -1,5 +1,5 @@
 // Athena - Mermaid Renderer (mermaid-cli integration)
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { writeFile, mkdir, readFile, unlink } from "node:fs/promises";
 import { join, basename } from "node:path";

@@ -1,5 +1,5 @@
 // Athena - ANSI to SVG Renderer
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 //
 // Renders terminal output (with ANSI escape codes) to SVG images.
 // No external dependencies - pure SVG generation.

@@ -1,5 +1,5 @@
 // Athena - Database Schema ER Diagram Generator
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";

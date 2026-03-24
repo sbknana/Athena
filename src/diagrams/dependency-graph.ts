@@ -1,5 +1,5 @@
 // Athena - Dependency Graph Generator
-// Copyright 2026, TheForge, LLC
+// Copyright 2026, Forgeborn
 
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";

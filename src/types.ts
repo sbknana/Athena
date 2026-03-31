@@ -144,11 +144,24 @@ export interface DocsConfigArchitecture {
   dependencies: string;
 }
 
+export interface DocsConfigQualityRubric {
+  description: string;
+  criteria: Record<string, string>;
+  passing_score: number;
+  max_score: number;
+}
+
 export interface DocsConfig {
   project_name: string;
   tagline: string;
   style_guide: DocsConfigStyleGuide;
   architecture: DocsConfigArchitecture;
+  interaction_model?: {
+    primary: string;
+    secondary: string;
+    key_insight: string;
+  };
+  quality_rubric?: DocsConfigQualityRubric;
 }
 
 export interface DocGeneratorConfig {
@@ -450,6 +463,60 @@ export interface CLIScreenshotEngineResult {
   totalScreenshots: number;
   failures: number;
   duration: number;
+}
+
+// --- Quality Loop Types ---
+
+export interface QualityScore {
+  conversational_flow: number;
+  feature_completeness: number;
+  honesty: number;
+  runnable_examples: number;
+  new_user_clarity: number;
+  tone: number;
+}
+
+export interface QualityCriterionFeedback {
+  criterion: keyof QualityScore;
+  score: number;
+  feedback: string;
+}
+
+export interface QualityEvaluation {
+  scores: QualityScore;
+  total: number;
+  maxScore: number;
+  passed: boolean;
+  feedback: QualityCriterionFeedback[];
+}
+
+export interface QualityLoopConfig {
+  model: ModelTier;
+  apiKey?: string;
+  outputDir: string;
+  projectDir: string;
+  docs: DocType[];
+  screenshotManifest?: ScreenshotManifest;
+  docsConfig?: DocsConfig;
+  diffMode: boolean;
+  maxIterations: number;
+  targetScore: number;
+}
+
+export interface QualityLoopIterationResult {
+  iteration: number;
+  docType: DocType;
+  evaluation: QualityEvaluation;
+  regenerated: boolean;
+}
+
+export interface QualityLoopResult {
+  docs: GeneratedDoc[];
+  diffs: DiffResult[];
+  model: string;
+  generatedAt: string;
+  iterations: QualityLoopIterationResult[];
+  finalScores: Record<DocType, QualityEvaluation>;
 }
 
 // --- Diagram Generator Types ---

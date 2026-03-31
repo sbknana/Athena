@@ -10,3 +10,4 @@ export {
   printDiffSummary,
 } from "./doc-generator.js";
 export { SYSTEM_PROMPTS, buildSystemPrompt, buildUserPrompt } from "./prompts.js";
+export { QualityLoop, printQualityLoopSummary } from "./quality-loop.js";

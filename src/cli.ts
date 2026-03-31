@@ -12,6 +12,8 @@ import {
   loadManifest,
   loadScreenshotManifest,
   printDiffSummary,
+  QualityLoop,
+  printQualityLoopSummary,
 } from "./generators/index.js";
 import { generateChangelog } from "./changelog/index.js";
 import { loadConfig, initConfig, hasConfig } from "./config.js";
@@ -218,6 +220,165 @@ program
           );
         } else {
           console.error("Error generating docs:", err);
+        }
+        process.exit(1);
+      }
+    }
+  );
+
+program
+  .command("generate-docs-loop")
+  .description(
+    "Generate documentation with quality scoring loop — regenerates until target score is met (requires docs-config.json with quality_rubric)"
+  )
+  .requiredOption("--project <path>", "Path to the project directory")
+  .option(
+    "--output <path>",
+    "Output directory for generated docs (default: <project>/docs)"
+  )
+  .option(
+    "--docs <types>",
+    "Comma-separated doc types to generate (readme,architecture,api,deployment,contributing)",
+    "readme"
+  )
+  .option(
+    "--model <tier>",
+    "Model tier: 'speed' (Sonnet) or 'quality' (Opus)",
+    "quality"
+  )
+  .option("--api-key <key>", "Anthropic API key (or set ANTHROPIC_API_KEY env)")
+  .option(
+    "--diff",
+    "Only update changed sections, preserving manual edits",
+    false
+  )
+  .option("--scan", "Run project scan before generating docs", false)
+  .option(
+    "--max-iterations <n>",
+    "Maximum quality improvement iterations per doc (default: 3)",
+    "3"
+  )
+  .option(
+    "--target-score <n>",
+    "Target total score out of 30 (default: 24)",
+    "24"
+  )
+  .action(
+    async (options: {
+      project: string;
+      output?: string;
+      docs: string;
+      model: string;
+      apiKey?: string;
+      diff: boolean;
+      scan: boolean;
+      maxIterations: string;
+      targetScore: string;
+    }) => {
+      const projectDir = resolve(options.project);
+
+      if (!existsSync(projectDir)) {
+        console.error(
+          `Error: Project directory does not exist: ${projectDir}`
+        );
+        process.exit(1);
+      }
+
+      const outputDir = options.output
+        ? resolve(options.output)
+        : join(projectDir, "docs");
+
+      // Validate doc types
+      const requestedDocs = options.docs.split(",").map((d) => d.trim());
+      for (const doc of requestedDocs) {
+        if (!ALL_DOC_TYPES.includes(doc as DocType)) {
+          console.error(
+            `Error: Unknown doc type '${doc}'. Valid types: ${ALL_DOC_TYPES.join(", ")}`
+          );
+          process.exit(1);
+        }
+      }
+
+      // Validate model tier
+      if (options.model !== "speed" && options.model !== "quality") {
+        console.error(
+          "Error: --model must be 'speed' (Sonnet) or 'quality' (Opus)"
+        );
+        process.exit(1);
+      }
+
+      const maxIterations = parseInt(options.maxIterations, 10);
+      if (isNaN(maxIterations) || maxIterations < 1 || maxIterations > 10) {
+        console.error("Error: --max-iterations must be between 1 and 10");
+        process.exit(1);
+      }
+
+      const targetScore = parseInt(options.targetScore, 10);
+      if (isNaN(targetScore) || targetScore < 6 || targetScore > 30) {
+        console.error("Error: --target-score must be between 6 and 30");
+        process.exit(1);
+      }
+
+      try {
+        // Optionally run scan first
+        if (options.scan) {
+          console.log("Scanning project...");
+          const manifest = await scanProject(projectDir);
+          const manifestPath = join(projectDir, "project-manifest.json");
+          await writeFile(
+            manifestPath,
+            JSON.stringify(manifest, null, 2) + "\n",
+            "utf-8"
+          );
+          console.log(`Manifest written to: ${manifestPath}`);
+        }
+
+        // Load manifest
+        console.log("Loading project manifest...");
+        const manifest = await loadManifest(projectDir);
+
+        // Load screenshot manifest if available
+        const screenshotManifest = await loadScreenshotManifest(projectDir);
+        if (screenshotManifest) {
+          console.log(
+            `Found ${screenshotManifest.screenshots.length} screenshots`
+          );
+        }
+
+        // Run quality loop
+        console.log(
+          `\nGenerating documentation with quality loop (model: ${options.model})...`
+        );
+        const loop = new QualityLoop({
+          model: options.model as ModelTier,
+          apiKey: options.apiKey,
+          outputDir,
+          projectDir,
+          docs: requestedDocs as DocType[],
+          screenshotManifest,
+          diffMode: options.diff,
+          maxIterations,
+          targetScore,
+        });
+
+        const result = await loop.run(manifest);
+
+        // Print summary
+        printQualityLoopSummary(result);
+
+        if (options.diff) {
+          printDiffSummary(result.diffs);
+        }
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          err.message.includes("project-manifest.json")
+        ) {
+          console.error(
+            "Error: No project-manifest.json found. Run 'athena generate --project <path>' first, or use --scan."
+          );
+        } else {
+          console.error("Error in quality loop:", err);
         }
         process.exit(1);
       }
